@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>945902506805-nrlatrg80k38iqm8ppt446sf1qgq1ksb.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.945902506805-nrlatrg80k38iqm8ppt446sf1qgq1ksb</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBd6WdOi3TG7lmUn3PciKwz5W-wjJOj2hc</string>
+	<key>GCM_SENDER_ID</key>
+	<string>945902506805</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.shreyassane.splitmytrip</string>
+	<key>PROJECT_ID</key>
+	<string>split-my-trip</string>
+	<key>STORAGE_BUCKET</key>
+	<string>split-my-trip.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:945902506805:ios:33275f45dc3ababc67327c</string>
+	<key>DATABASE_URL</key>
+	<string>https://split-my-trip.firebaseio.com</string>
+</dict>
+</plist>

@@ -1,21 +1,25 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+/** @format */
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+import React from "react";
+// import firebase from "firebase";
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+import AppNavigator from "./controller/AppNavigator";
+
+// const firebaseConfig = {
+//   apiKey: `AIzaSyAi_Uixv3JUeBLI0uC9gcspuPfvGNUJwsY`,
+//   authDomain: `split-my-trip.firebaseapp.com`,
+//   databaseURL: `https://split-my-trip.firebaseio.com`,
+//   projectId: `split-my-trip`,
+//   storageBucket: `split-my-trip.appspot.com`,
+//   messagingSenderId: `945902506805`,
+//   appId: `1:945902506805:web:70334d5baa16bf4667327c`,
+//   measurementId: `G-3LWTHGB014`,
+// };
+// if (firebase.apps.length === 0) {
+//   firebase.initializeApp(firebaseConfig);
+// }
+const App = () => {
+  return <AppNavigator></AppNavigator>;
+};
+
+export default App;
