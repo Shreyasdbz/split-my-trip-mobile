@@ -1,31 +1,26 @@
 /** @format */
 
 import React from "react";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import styled from "styled-components";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
-const Modal_UserSettings = ({ userInfo, handleUserSettingsModal }) => {
+const Modal_NewTrips = ({ handleDeleteTripsModal }) => {
   return (
     <ModalContainer>
       <ModalBox>
         <TitleView>
-          <TitleText>User Settings</TitleText>
+          <TitleText>Are you sure you want to delete all your trips?</TitleText>
         </TitleView>
-        <SettingsView>
-          <Line_name>Hi {userInfo.name},</Line_name>
-          <Line_caption>You are logged in as: </Line_caption>
-          <Line_email>{userInfo.email}</Line_email>
-        </SettingsView>
         <ButtonsView>
-          <TouchableOpacity onPress={() => handleUserSettingsModal("CLOSE")}>
+          <TouchableOpacity onPress={() => handleDeleteTripsModal("CLOSE")}>
             <BtnView_cancel>
               <BtnText_cancel>Cancel</BtnText_cancel>
             </BtnView_cancel>
           </TouchableOpacity>
           <DividerBar />
-          <TouchableOpacity onPress={() => handleUserSettingsModal("LOGOUT")}>
+          <TouchableOpacity onPress={() => handleDeleteTripsModal("DELETE")}>
             <BtnView_logOut>
-              <BtnText_logOut>Log Out</BtnText_logOut>
+              <BtnText_logOut>Delete</BtnText_logOut>
             </BtnView_logOut>
           </TouchableOpacity>
         </ButtonsView>
@@ -34,17 +29,15 @@ const Modal_UserSettings = ({ userInfo, handleUserSettingsModal }) => {
   );
 };
 
-export default Modal_UserSettings;
+export default Modal_NewTrips;
 
 const ModalContainer = styled.View`
-  z-index: 5;
-  position: absolute;
   height: 100%;
   width: 100%;
   align-items: center;
-  justify-content: center;
-  padding: 0px 40px;
-  /* background-color: rgba(0, 0, 0, 0.125); */
+  justify-content: flex-start;
+  padding: 20px 20px;
+  padding-top: 200px;
 `;
 
 const ModalBox = styled.View`
@@ -61,33 +54,13 @@ const TitleView = styled.View`
   width: 100%;
   align-items: center;
   justify-content: center;
+  padding: 10px 20px;
 `;
 
 const TitleText = styled.Text`
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 600;
   padding-bottom: 10px;
-`;
-
-const SettingsView = styled.View`
-  width: 100%;
-  padding: 15px 10px;
-  justify-content: center;
-`;
-
-const Line_name = styled.Text`
-  font-size: 18px;
-  font-weight: 600;
-`;
-
-const Line_caption = styled.Text`
-  font-size: 18px;
-  padding: 5px 0px;
-`;
-
-const Line_email = styled.Text`
-  font-size: 18px;
-  font-weight: 600;
 `;
 
 const ButtonsView = styled.View`
@@ -102,6 +75,7 @@ const BtnView_cancel = styled.View`
   width: 100px;
   align-items: center;
   justify-content: center;
+  /* border: 1px solid black; */
 `;
 
 const BtnText_cancel = styled.Text`
@@ -121,6 +95,7 @@ const BtnView_logOut = styled.View`
   width: 100px;
   align-items: center;
   justify-content: center;
+  /* border: 1px solid black; */
 `;
 
 const BtnText_logOut = styled.Text`

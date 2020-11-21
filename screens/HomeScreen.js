@@ -4,21 +4,45 @@ import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { TouchableOpacity, ScrollView } from "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
-import { Animated } from "react-native";
+import { Animated, Keyboard } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
 import LoginScreen from "./LoginScreen";
-import HomeScreen_Header from "../components/misc/HomeScreen_Header";
-import { storeUser, getUserInfo, logoutUser } from "../store/loginStore";
+import HomeScreenHeader from "../components/misc/HomeScreenHeader";
 import Modal_UserSettings from "../components/misc/Modal_UserSettings";
 import TripListing from "../components/trips/TripListing";
+import Modal_NewTrip from "../components/trips/Modal_NewTrip";
+import Modal_DeleteTrips from "../components/trips/Modal_DeleteTrips";
+
+import { storeUser, getUserInfo, logoutUser } from "../store/loginStore";
+import { getTrips, addTrip, removeTrips } from "../store/tripStore";
 
 const HomeScreen = ({ navigation }) => {
   const [userInfo, set_userInfo] = useState(null);
+  const [tripsList, set_tripsList] = useState([]);
 
   // Animate State Variables
+  const [newTripModal_visible, set_newTripModal_visible] = useState(false);
   const homeScreen_opacity = useRef(new Animated.Value(1)).current;
-  const modal_userSettings_yPos = useRef(new Animated.Value(3000)).current;
+  const modal_userSettings_yPos = useRef(new Animated.Value(-3000)).current;
+  const modal_newTrip_yPos = useRef(new Animated.Value(3000)).current;
+  const modal_deleteTrips_yPos = useRef(new Animated.Value(3000)).current;
+
+  function animateHomeScreen(action) {
+    if (action === "OPEN") {
+      Animated.timing(homeScreen_opacity, {
+        toValue: 0.15,
+        duration: 300,
+        useNativeDriver: false,
+      }).start();
+    } else if (action === "CLOSE") {
+      Animated.timing(homeScreen_opacity, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+    }
+  }
 
   function handleUserSettingsModal(action) {
     if (action === "OPEN") {
@@ -27,33 +51,21 @@ const HomeScreen = ({ navigation }) => {
         duration: 300,
         useNativeDriver: false,
       }).start();
-      Animated.timing(homeScreen_opacity, {
-        toValue: 0.15,
-        duration: 300,
-        useNativeDriver: false,
-      }).start();
+      animateHomeScreen("OPEN");
     } else if (action === "CLOSE") {
       Animated.timing(modal_userSettings_yPos, {
-        toValue: 3000,
+        toValue: -3000,
         duration: 200,
         useNativeDriver: false,
       }).start();
-      Animated.timing(homeScreen_opacity, {
-        toValue: 1,
-        duration: 200,
-        useNativeDriver: false,
-      }).start();
+      animateHomeScreen("CLOSE");
     } else if (action === "LOGOUT") {
       Animated.timing(modal_userSettings_yPos, {
-        toValue: 3000,
+        toValue: -3000,
         duration: 200,
         useNativeDriver: false,
       }).start();
-      Animated.timing(homeScreen_opacity, {
-        toValue: 1,
-        duration: 200,
-        useNativeDriver: false,
-      }).start();
+      animateHomeScreen("CLOSE");
       setTimeout(() => {
         logoutUser().then((update) => {
           getUserInfo().then((newInfo) => {
@@ -64,6 +76,75 @@ const HomeScreen = ({ navigation }) => {
     }
   }
 
+  const handleNewTripModal = (action, newTripName) => {
+    if (action === "OPEN") {
+      set_newTripModal_visible((crr) => true);
+      Animated.timing(modal_newTrip_yPos, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: false,
+      }).start();
+      animateHomeScreen("OPEN");
+    } else if (action === "CLOSE") {
+      Keyboard.dismiss();
+      Animated.timing(modal_newTrip_yPos, {
+        toValue: 3000,
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+      animateHomeScreen("CLOSE");
+      set_newTripModal_visible((crr) => false);
+    } else if (action === "SAVE") {
+      // Store trip
+      Keyboard.dismiss();
+      addTrip(newTripName).then((update) => {
+        getTrips().then((newTrips) => {
+          set_tripsList((crr) => newTrips);
+        });
+      });
+      Animated.timing(modal_newTrip_yPos, {
+        toValue: 3000,
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+      animateHomeScreen("CLOSE");
+      set_newTripModal_visible((crr) => false);
+    }
+  };
+
+  const handleDeleteTripsModal = (action) => {
+    if (action === "OPEN") {
+      if (tripsList !== null) {
+        Animated.timing(modal_deleteTrips_yPos, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: false,
+        }).start();
+        animateHomeScreen("OPEN");
+      }
+    } else if (action === "CLOSE") {
+      Animated.timing(modal_deleteTrips_yPos, {
+        toValue: 3000,
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+      animateHomeScreen("CLOSE");
+    } else if (action === "DELETE") {
+      // delete all trips
+      removeTrips().then((update) => {
+        getTrips((newTrips) => {
+          set_tripsList((crr) => []);
+        });
+      });
+      Animated.timing(modal_deleteTrips_yPos, {
+        toValue: 3000,
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+      animateHomeScreen("CLOSE");
+    }
+  };
+
   const handleLogIn = (userInfo) => {
     storeUser(userInfo).then((update) => {
       getUserInfo().then((newInfo) => {
@@ -72,11 +153,26 @@ const HomeScreen = ({ navigation }) => {
     });
   };
 
-  useEffect(() => {
-    getUserInfo().then((newInfo) => {
-      set_userInfo((crr) => newInfo);
+  var _subscribe = navigation.addListener("didFocus", () => {
+    getTrips().then((newTrips) => {
+      set_tripsList(newTrips);
     });
-  }, []);
+  });
+
+  useEffect(
+    () => {
+      // Setup user
+      getUserInfo().then((newInfo) => {
+        set_userInfo((crr) => newInfo);
+      });
+      // Setup trips
+      getTrips().then((newTrips) => {
+        set_tripsList((crr) => newTrips);
+      });
+    },
+    [],
+    tripsList
+  );
 
   return (
     <RootView>
@@ -94,8 +190,25 @@ const HomeScreen = ({ navigation }) => {
               handleUserSettingsModal={handleUserSettingsModal}
             />
           </Animated_Modal_UserSettings_View>
+
+          <Animated_Modal_NewTrip_View style={{ top: modal_newTrip_yPos }}>
+            {newTripModal_visible === true ? (
+              <Modal_NewTrip handleNewTripModal={handleNewTripModal} />
+            ) : (
+              <></>
+            )}
+          </Animated_Modal_NewTrip_View>
+
+          <Animated_Modal_DeleteTrips_View
+            style={{ top: modal_deleteTrips_yPos }}
+          >
+            <Modal_DeleteTrips
+              handleDeleteTripsModal={handleDeleteTripsModal}
+            />
+          </Animated_Modal_DeleteTrips_View>
+
           <Animated_HomeScreenView style={{ opacity: homeScreen_opacity }}>
-            <HomeScreen_Header
+            <HomeScreenHeader
               userInfo={userInfo}
               handleUserSettingsModal={handleUserSettingsModal}
             />
@@ -103,20 +216,35 @@ const HomeScreen = ({ navigation }) => {
               showsVerticalScrollIndicator={false}
               style={{ paddingBottom: 100 }}
             >
-              <TripListing title="Colorado" colorID={1} />
-              <TripListing title="Hawaii" colorID={2} />
-              <TripListing title="Alaska" colorID={3} />
-              <TripListing title="Philadelphia" colorID={4} />
-              <TripListing title="Dallas" colorID={5} />
-              <TripListing title="Utah" colorID={6} />
-              <TripListing title="Arizona" colorID={7} />
-              <TripListing title="Pittsburgh" colorID={8} />
-              <TripListing title="Maine" colorID={9} />
-              <EmptyListing />
+              {tripsList === null ? (
+                <AddListing>
+                  <EmptyListingText>To add a new trip</EmptyListingText>
+                  <EmptyListingText>tap the + icon</EmptyListingText>
+                  <EmptyListingText>in the bottom right.</EmptyListingText>
+                </AddListing>
+              ) : (
+                <>
+                  {Object.entries(tripsList).map((trip) => {
+                    return (
+                      <TouchableOpacity
+                        key={trip[1].id}
+                        onPress={() =>
+                          navigation.navigate("Trip", {
+                            trip: trip[1],
+                          })
+                        }
+                      >
+                        <TripListing trip={trip[1]} />
+                      </TouchableOpacity>
+                    );
+                  })}
+                  <EmptyListing />
+                </>
+              )}
             </ScrollView>
 
             <BtnView_Add>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => handleNewTripModal("OPEN")}>
                 <BtnBg_Add>
                   <LinearGradient
                     colors={["#F08080", "#FFD687"]}
@@ -139,7 +267,7 @@ const HomeScreen = ({ navigation }) => {
               </TouchableOpacity>
             </BtnView_Add>
             <BtnView_Delete>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => handleDeleteTripsModal("OPEN")}>
                 <BtnBg_Delete>
                   <LinearGradient
                     colors={["#76E4FC", "#FFFB94"]}
@@ -191,7 +319,7 @@ const BtnView_Add = styled.View`
   /* opacity: 0.9; */
   position: absolute;
   bottom: 125px;
-  right: 30px;
+  right: 20px;
   box-shadow: 0px 5px 15px rgba(237, 106, 94, 0.5);
 `;
 
@@ -205,14 +333,15 @@ const BtnLogo_Add = styled.Image`
   height: 50px;
   width: 50px;
   opacity: 0.75;
-  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.25);
+  /* box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.25); */
+  border-radius: 50px;
 `;
 
 const BtnView_Delete = styled.View`
   /* opacity: 0.9; */
   position: absolute;
   bottom: 50px;
-  right: 40px;
+  right: 30px;
   box-shadow: 0px 5px 15px rgba(118, 228, 252, 0.5);
 `;
 
@@ -226,12 +355,30 @@ const BtnLogo_Delete = styled.Image`
   height: 30px;
   width: 30px;
   opacity: 0.75;
-  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.25);
+  /* box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.25); */
+  border-radius: 50px;
 `;
 
 const EmptyListing = styled.View`
   width: 100%;
   height: 200px;
+  padding: 40px 50px;
+  align-items: center;
+  justify-content: flex-start;
+`;
+
+const AddListing = styled.View`
+  width: 100%;
+  height: 200px;
+  padding: 40px 50px;
+  align-items: center;
+  justify-content: flex-start;
+`;
+const EmptyListingText = styled.Text`
+  font-size: 16px;
+  font-weight: 600;
+  opacity: 0.3;
+  margin: 2px 0px;
 `;
 
 const Modal_UserSettings_View = styled.View`
@@ -242,6 +389,26 @@ const Modal_UserSettings_View = styled.View`
 `;
 const Animated_Modal_UserSettings_View = Animated.createAnimatedComponent(
   Modal_UserSettings_View
+);
+
+const Modal_NewTrip_View = styled.View`
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 1;
+`;
+const Animated_Modal_NewTrip_View = Animated.createAnimatedComponent(
+  Modal_NewTrip_View
+);
+
+const Modal_DeleteTrips_View = styled.View`
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 1;
+`;
+const Animated_Modal_DeleteTrips_View = Animated.createAnimatedComponent(
+  Modal_DeleteTrips_View
 );
 
 // Icons8 Ref for "+" icon: <a href="https://icons8.com/icon/3220/plus">Plus icon by Icons8</a>

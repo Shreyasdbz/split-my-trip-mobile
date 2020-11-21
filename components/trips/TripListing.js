@@ -6,13 +6,13 @@ import { LinearGradient } from "expo-linear-gradient";
 
 import { getColorByID } from "../../store/colorStore";
 
-const TripListing = ({ title, colorID }) => {
+const TripListing = ({ trip }) => {
   const [_colorID, set__colorID] = useState(0);
   const [base, set_base] = useState("");
   const [secondary, set_secondary] = useState("");
 
   useEffect(() => {
-    var color = getColorByID(colorID);
+    var color = getColorByID(trip.colorID);
     set__colorID((crr) => color.id);
     set_base((crr) => color.base);
     set_secondary((crr) => color.secondary);
@@ -45,10 +45,10 @@ const TripListing = ({ title, colorID }) => {
           end={{ x: 2.75, y: 0 }}
         />
         <TopRow>
-          <DateText>2020-11-14</DateText>
+          <DateText>{trip.date}</DateText>
         </TopRow>
         <BottomRow>
-          <TitleText>{title}</TitleText>
+          <TitleText>{trip.title}</TitleText>
         </BottomRow>
       </InnerView>
     </TripListingView>

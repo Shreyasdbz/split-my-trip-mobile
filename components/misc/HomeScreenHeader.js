@@ -5,7 +5,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import styled from "styled-components";
 import { LinearGradient } from "expo-linear-gradient";
 
-const HomeScreen_Header = ({ userInfo, handleUserSettingsModal }) => {
+const HomeScreenHeader = ({ userInfo, handleUserSettingsModal }) => {
   return (
     <Container>
       <LinearGradient
@@ -43,7 +43,7 @@ const HomeScreen_Header = ({ userInfo, handleUserSettingsModal }) => {
   );
 };
 
-export default HomeScreen_Header;
+export default HomeScreenHeader;
 
 const Container = styled.View`
   height: 140px;
