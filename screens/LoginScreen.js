@@ -9,6 +9,8 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import * as Google from "expo-google-app-auth";
 import { firebaseConfig } from "../config/Firebase";
 
+import { deleteAllData } from "../store/loginStore";
+
 const windowHeight = Dimensions.get("window").height;
 
 const LoginScreen = ({ handleLogIn }) => {
@@ -119,7 +121,7 @@ const LoginScreen = ({ handleLogIn }) => {
         </TouchableOpacity>
       </ButtonsView>
       <InfoView>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={deleteAllData}>
           <InfoText>i</InfoText>
         </TouchableOpacity>
       </InfoView>

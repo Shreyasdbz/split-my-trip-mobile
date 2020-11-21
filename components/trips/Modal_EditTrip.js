@@ -177,7 +177,7 @@ const Modal_EditTrip = ({ handleEditTripModal, trip }) => {
             </BtnView>
           </TouchableOpacity>
           <DividerBar />
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => handleEditTripModal("DELETE")}>
             <BtnView>
               <BtnText_Delete>Delete</BtnText_Delete>
             </BtnView>

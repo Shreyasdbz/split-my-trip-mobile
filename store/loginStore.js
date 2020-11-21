@@ -55,4 +55,16 @@ export const logoutUser = async () => {
   }
 };
 
+// ------------------------------------------------------------------------
+// Delete All Local data
+// ------------------------------------------------------------------------
+export const deleteAllData = async () => {
+  try {
+    const keys = await AsyncStorage.getAllKeys();
+    return await AsyncStorage.multiRemove(keys);
+  } catch (err) {
+    console.log("LS - delete all: ", err);
+  }
+};
+
 // ios person logo: <a href="https://icons8.com/icon/99268/person">Person icon by Icons8</a>
