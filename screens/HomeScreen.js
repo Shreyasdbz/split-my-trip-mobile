@@ -93,7 +93,9 @@ const HomeScreen = ({ navigation }) => {
         useNativeDriver: false,
       }).start();
       animateHomeScreen("CLOSE");
-      set_newTripModal_visible((crr) => false);
+      setTimeout(() => {
+        set_newTripModal_visible((crr) => false);
+      }, 500);
     } else if (action === "SAVE") {
       // Store trip
       Keyboard.dismiss();
@@ -108,7 +110,9 @@ const HomeScreen = ({ navigation }) => {
         useNativeDriver: false,
       }).start();
       animateHomeScreen("CLOSE");
-      set_newTripModal_visible((crr) => false);
+      setTimeout(() => {
+        set_newTripModal_visible((crr) => false);
+      }, 500);
     }
   };
 

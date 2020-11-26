@@ -92,7 +92,7 @@ const ModalContainer = styled.View`
   width: 100%;
   align-items: center;
   justify-content: flex-start;
-  padding: 20px 20px;
+  padding: 20px 40px;
   padding-top: 200px;
 `;
 

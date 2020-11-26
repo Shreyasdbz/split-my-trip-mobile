@@ -11,6 +11,7 @@ import PersonListing from "../components/people/PersonListing";
 import ActivityListing from "../components/activities/ActivityListing";
 import Modal_AddPerson from "../components/people/Modal_AddPerson";
 import Modal_EditPerson from "../components/people/Modal_EditPerson";
+import Modal_AddActivity from "../components/activities/Modal_AddActivity";
 
 import { getColorByID } from "../store/colorStore";
 import { editTrip, removeTrip } from "../store/tripStore";
@@ -20,6 +21,7 @@ import {
   editPerson,
   removePerson,
 } from "../store/peopleStore";
+import { build_peopleList_newActivity } from "../helpers/listProcessors";
 
 const TripScreen = ({ navigation }) => {
   const [trip, set_trip] = useState(navigation.state.params.trip);
@@ -34,6 +36,7 @@ const TripScreen = ({ navigation }) => {
 
   const [activitiesList, set_activitiesList] = useState(null);
   const [currentActivityEdit, set_currentActivityEdit] = useState(null);
+  const [peopleList_newActivity, set_peopleList_newActivity] = useState(null);
 
   // Modal Active States
   const [editTripModal_active, set_editTripModal_active] = useState(false);
@@ -95,7 +98,9 @@ const TripScreen = ({ navigation }) => {
         useNativeDriver: false,
       }).start();
       animateTripScreen("CLOSE");
-      set_editTripModal_active((crr) => false);
+      setTimeout(() => {
+        set_editTripModal_active((crr) => false);
+      }, 500);
       //
     } else if (action === "DELETE") {
       // Delete Trip
@@ -105,9 +110,11 @@ const TripScreen = ({ navigation }) => {
         useNativeDriver: false,
       }).start();
       animateTripScreen("CLOSE");
-      set_editTripModal_active((crr) => false);
-      navigation.navigate("Home");
-      removeTrip(trip.id);
+      setTimeout(() => {
+        set_editTripModal_active((crr) => false);
+        navigation.navigate("Home");
+        removeTrip(trip.id);
+      }, 500);
       //
     } else if (action === "SAVE") {
       // Save Stuff in
@@ -123,7 +130,9 @@ const TripScreen = ({ navigation }) => {
         useNativeDriver: false,
       }).start();
       animateTripScreen("CLOSE");
-      set_editTripModal_active((crr) => false);
+      setTimeout(() => {
+        set_editTripModal_active((crr) => false);
+      }, 500);
     }
   };
 
@@ -147,7 +156,9 @@ const TripScreen = ({ navigation }) => {
         useNativeDriver: false,
       }).start();
       animateTripScreen("CLOSE");
-      set_addPersonModal_active((crr) => false);
+      setTimeout(() => {
+        set_addPersonModal_active((crr) => false);
+      }, 500);
       //
     } else if (action === "SAVE") {
       addPerson(trip.id, input_name).then((update) => {
@@ -161,7 +172,9 @@ const TripScreen = ({ navigation }) => {
         useNativeDriver: false,
       }).start();
       animateTripScreen("CLOSE");
-      set_addPersonModal_active((crr) => false);
+      setTimeout(() => {
+        set_addPersonModal_active((crr) => false);
+      }, 500);
       //
     }
   };
@@ -186,7 +199,9 @@ const TripScreen = ({ navigation }) => {
         useNativeDriver: false,
       }).start();
       animateTripScreen("CLOSE");
-      set_editPersonModal_active((crr) => false);
+      setTimeout(() => {
+        set_editPersonModal_active((crr) => false);
+      }, 500);
       //
     } else if (action === "SAVE") {
       // Save to store
@@ -201,7 +216,9 @@ const TripScreen = ({ navigation }) => {
         useNativeDriver: false,
       }).start();
       animateTripScreen("CLOSE");
-      set_editPersonModal_active((crr) => false);
+      setTimeout(() => {
+        set_editPersonModal_active((crr) => false);
+      }, 500);
       //
     } else if (action === "DELETE") {
       // Delete from store
@@ -216,7 +233,56 @@ const TripScreen = ({ navigation }) => {
         useNativeDriver: false,
       }).start();
       animateTripScreen("CLOSE");
-      set_editPersonModal_active((crr) => false);
+      setTimeout(() => {
+        set_editPersonModal_active((crr) => false);
+      }, 500);
+      //
+    }
+  };
+
+  // ----
+  // --- handle -- ADD ACTIVITY MODAL ----
+  // ----
+  const handleAddActivityModal = (
+    action,
+    input_name,
+    input_cost,
+    input_payer,
+    input_participants
+  ) => {
+    if (action === "OPEN") {
+      set_peopleList_newActivity((crr) =>
+        build_peopleList_newActivity(peopleList)
+      );
+      set_addActivityModal_active((crr) => true);
+      Animated.timing(modal_addActivity_yPos, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: false,
+      }).start();
+      animateTripScreen("OPEN");
+      //
+    } else if (action === "CLOSE") {
+      Animated.timing(modal_addActivity_yPos, {
+        toValue: 3000,
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+      animateTripScreen("CLOSE");
+      setTimeout(() => {
+        set_addActivityModal_active((crr) => false);
+      }, 500);
+      //
+    } else if (action === "SAVE") {
+      Animated.timing(modal_addActivity_yPos, {
+        toValue: 3000,
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+      animateTripScreen("CLOSE");
+      setTimeout(() => {
+        set_addActivityModal_active((crr) => false);
+      }, 500);
       //
     }
   };
@@ -256,7 +322,6 @@ const TripScreen = ({ navigation }) => {
         )}
       </Animated_Modal_EditTrip_View>
       {/*  ---------------------------------- MODAL - EDIT TRIP ---------------------------------- */}
-
       {/*  ---------------------------------- MODAL - ADD PERSON ---------------------------------- */}
       <Animated_Modal_AddPerson_View style={{ top: modal_addPerson_yPos }}>
         {addPersonModal_active === true ? (
@@ -266,7 +331,6 @@ const TripScreen = ({ navigation }) => {
         )}
       </Animated_Modal_AddPerson_View>
       {/*  ---------------------------------- MODAL - ADD PERSON ---------------------------------- */}
-
       {/*  ---------------------------------- MODAL - EDIT PERSON ---------------------------------- */}
       <Animated_Modal_EditPerson_View style={{ top: modal_editPerson_yPos }}>
         {editPersonModal_active === true ? (
@@ -280,6 +344,22 @@ const TripScreen = ({ navigation }) => {
         )}
       </Animated_Modal_EditPerson_View>
       {/*  ---------------------------------- MODAL - EDIT PERSON ---------------------------------- */}
+
+      {/*  ---------------------------------- MODAL - ADD ACTIVITY ---------------------------------- */}
+      <Animated_Modal_AddActivity_View style={{ top: modal_addActivity_yPos }}>
+        {addActivityModal_active === true ? (
+          <>
+            <Modal_AddActivity
+              handleAddActivityModal={handleAddActivityModal}
+              input_pickerList={peopleList_newActivity}
+            />
+            {/* {console.log(peopleList_newActivity)} */}
+          </>
+        ) : (
+          <></>
+        )}
+      </Animated_Modal_AddActivity_View>
+      {/*  ---------------------------------- MODAL - ADD ACTIVITY ---------------------------------- */}
 
       {/*  Trip View ------------------------ BEGIN ------------------------  */}
       <Animated_TripView style={{ opacity: tripScreen_opacity }}>
@@ -356,7 +436,9 @@ const TripScreen = ({ navigation }) => {
                 <TitleText>Activities</TitleText>
               </TitleView>
               <TitleBtnView>
-                <TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => handleAddActivityModal("OPEN")}
+                >
                   <TitleBtnTextWrapper>
                     <TitleBtnText>+ ADD</TitleBtnText>
                   </TitleBtnTextWrapper>
@@ -564,4 +646,14 @@ const Modal_EditPerson_View = styled.View`
 `;
 const Animated_Modal_EditPerson_View = Animated.createAnimatedComponent(
   Modal_EditPerson_View
+);
+
+const Modal_AddActivity_View = styled.View`
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 1;
+`;
+const Animated_Modal_AddActivity_View = Animated.createAnimatedComponent(
+  Modal_AddActivity_View
 );

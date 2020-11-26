@@ -17,6 +17,8 @@ export const addPerson = async (input_tripID, input_name) => {
         id: uuid(),
         tripID: input_tripID,
         name: input_name,
+        payingActivities: [],
+        participantingInActivities: [],
       };
       currentList.push(person);
       const sendValue = JSON.stringify(currentList);
@@ -28,6 +30,8 @@ export const addPerson = async (input_tripID, input_name) => {
         id: uuid(),
         tripID: input_tripID,
         name: input_name,
+        payingActivities: [],
+        participantingInActivities: [],
       };
       currentList.push(person);
       const sendValue = JSON.stringify(currentList);
