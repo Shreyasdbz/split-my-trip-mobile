@@ -105,8 +105,14 @@ export const removePerson = async (input_tripID, input_personID) => {
           newList.push(currentList[i]);
         }
       }
-      const sendValue = JSON.stringify(newList);
-      return await AsyncStorage.setItem(PEOPLE_KEY, sendValue);
+
+      // If list is empty, return nulll
+      if (newList.length === 0) {
+        return await AsyncStorage.removeItem(PEOPLE_KEY);
+      } else {
+        const sendValue = JSON.stringify(newList);
+        return await AsyncStorage.setItem(PEOPLE_KEY, sendValue);
+      }
     }
   } catch (err) {
     console.log("PS - editPerson - ERR[1]: ", err);

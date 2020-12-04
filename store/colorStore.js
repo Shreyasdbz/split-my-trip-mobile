@@ -98,6 +98,34 @@ export function getColorByID(colorID) {
 }
 
 // ------------------------------------------------------------------------
+// Get the color Base by ID
+// ------------------------------------------------------------------------
+export function getColorBase(colorID) {
+  var base = "#FF6F6F";
+
+  for (let i = 0; i < colorPalette.length; i++) {
+    if (colorPalette[i].id === colorID) {
+      base = colorPalette[i].base;
+    }
+  }
+  return base;
+}
+
+// ------------------------------------------------------------------------
+// Get the color Base by ID
+// ------------------------------------------------------------------------
+export function getColorSecondary(colorID) {
+  var secondary = "#D16FFF";
+
+  for (let i = 0; i < colorPalette.length; i++) {
+    if (colorPalette[i].id === colorID) {
+      secondary = colorPalette[i].secondary;
+    }
+  }
+  return secondary;
+}
+
+// ------------------------------------------------------------------------
 // Get a random ID from the colorPalette
 // ------------------------------------------------------------------------
 export function getRandomColorID() {

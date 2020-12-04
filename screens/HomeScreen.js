@@ -16,10 +16,11 @@ import Modal_DeleteTrips from "../components/trips/Modal_DeleteTrips";
 
 import { storeUser, getUserInfo, logoutUser } from "../store/loginStore";
 import { getTrips, addTrip, removeTrips } from "../store/tripStore";
+import { getColorBase, getColorSecondary } from "../store/colorStore";
 
 const HomeScreen = ({ navigation }) => {
   const [userInfo, set_userInfo] = useState(null);
-  const [tripsList, set_tripsList] = useState([]);
+  const [tripsList, set_tripsList] = useState(null);
 
   // Animate State Variables
   const [newTripModal_visible, set_newTripModal_visible] = useState(false);
@@ -136,9 +137,7 @@ const HomeScreen = ({ navigation }) => {
     } else if (action === "DELETE") {
       // delete all trips
       removeTrips().then((update) => {
-        getTrips((newTrips) => {
-          set_tripsList((crr) => []);
-        });
+        set_tripsList((crr) => null);
       });
       Animated.timing(modal_deleteTrips_yPos, {
         toValue: 3000,
@@ -163,20 +162,16 @@ const HomeScreen = ({ navigation }) => {
     });
   });
 
-  useEffect(
-    () => {
-      // Setup user
-      getUserInfo().then((newInfo) => {
-        set_userInfo((crr) => newInfo);
-      });
-      // Setup trips
-      getTrips().then((newTrips) => {
-        set_tripsList((crr) => newTrips);
-      });
-    },
-    [],
-    tripsList
-  );
+  useEffect(() => {
+    // Setup user
+    getUserInfo().then((newInfo) => {
+      set_userInfo((crr) => newInfo);
+    });
+    // Setup trips
+    getTrips().then((newTrips) => {
+      set_tripsList((crr) => newTrips);
+    });
+  }, []);
 
   return (
     <RootView>
@@ -238,7 +233,12 @@ const HomeScreen = ({ navigation }) => {
                           })
                         }
                       >
-                        <TripListing trip={trip[1]} />
+                        <TripListing
+                          tripTitle={trip[1].title}
+                          tripDate={trip[1].date}
+                          tripBase={getColorBase(trip[1].colorID)}
+                          tripSecondary={getColorSecondary(trip[1].colorID)}
+                        />
                       </TouchableOpacity>
                     );
                   })}

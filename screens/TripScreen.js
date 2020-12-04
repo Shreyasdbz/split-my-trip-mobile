@@ -13,7 +13,11 @@ import Modal_AddPerson from "../components/people/Modal_AddPerson";
 import Modal_EditPerson from "../components/people/Modal_EditPerson";
 import Modal_AddActivity from "../components/activities/Modal_AddActivity";
 
-import { getColorByID } from "../store/colorStore";
+import {
+  getColorByID,
+  getColorBase,
+  getColorSecondary,
+} from "../store/colorStore";
 import { editTrip, removeTrip } from "../store/tripStore";
 import {
   getPeople,
@@ -90,7 +94,7 @@ const TripScreen = ({ navigation }) => {
         useNativeDriver: false,
       }).start();
       animateTripScreen("OPEN");
-      //
+      //----------
     } else if (action === "CLOSE") {
       Animated.timing(modal_editTrip_yPos, {
         toValue: -3000,
@@ -101,7 +105,7 @@ const TripScreen = ({ navigation }) => {
       setTimeout(() => {
         set_editTripModal_active((crr) => false);
       }, 500);
-      //
+      //----------
     } else if (action === "DELETE") {
       // Delete Trip
       Animated.timing(modal_editTrip_yPos, {
@@ -111,11 +115,11 @@ const TripScreen = ({ navigation }) => {
       }).start();
       animateTripScreen("CLOSE");
       setTimeout(() => {
-        set_editTripModal_active((crr) => false);
         navigation.navigate("Home");
         removeTrip(trip.id);
+        set_editTripModal_active((crr) => false);
       }, 500);
-      //
+      //----------
     } else if (action === "SAVE") {
       // Save Stuff in
       editTrip(trip.id, input_title, input_date, input_colorID);
@@ -123,7 +127,8 @@ const TripScreen = ({ navigation }) => {
       set_title((crr) => input_title);
       set_date((crr) => input_date);
       set_colorID((crr) => input_colorID);
-      getGradient();
+      set_colorBase(getColorBase(input_colorID));
+      set_colorSecondary(getColorSecondary(input_colorID));
       Animated.timing(modal_editTrip_yPos, {
         toValue: -3000,
         duration: 200,
@@ -134,6 +139,7 @@ const TripScreen = ({ navigation }) => {
         set_editTripModal_active((crr) => false);
       }, 500);
     }
+    //----------
   };
 
   // ----
@@ -205,9 +211,9 @@ const TripScreen = ({ navigation }) => {
       //
     } else if (action === "SAVE") {
       // Save to store
-      editPerson(trip.id, input_id, input_name).then((update) => {
-        getPeople((newPeople) => {
-          set_peopleList((crr) => newPeople);
+      editPerson(trip.id, input_id, input_name).then(() => {
+        getPeople(trip.id).then((newPeople) => {
+          set_peopleList(newPeople);
         });
       });
       Animated.timing(modal_editPerson_yPos, {
@@ -223,8 +229,8 @@ const TripScreen = ({ navigation }) => {
     } else if (action === "DELETE") {
       // Delete from store
       removePerson(trip.id, input_id).then((update) => {
-        getPeople((newPeople) => {
-          set_peopleList((crr) => newPeople);
+        getPeople(trip.id).then((newPeople) => {
+          set_peopleList(newPeople);
         });
       });
       Animated.timing(modal_editPerson_yPos, {
@@ -287,25 +293,17 @@ const TripScreen = ({ navigation }) => {
     }
   };
 
-  // ----
-  // --- set the gradient colors ----
-  // ----
-  function getGradient() {
-    var color = getColorByID(colorID);
-    set_colorBase((crr) => color.base);
-    set_colorSecondary((crr) => color.secondary);
-  }
-
   useEffect(
     () => {
-      getGradient();
+      set_colorBase(getColorBase(colorID));
+      set_colorSecondary(getColorSecondary(colorID));
       getPeople(trip.id).then((newPeople) => {
         set_peopleList((crr) => newPeople);
       });
     },
     [],
     [peopleList],
-    [editPersonModal_active]
+    [activitiesList]
   );
 
   return (

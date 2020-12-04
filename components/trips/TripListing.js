@@ -1,27 +1,14 @@
 /** @format */
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { LinearGradient } from "expo-linear-gradient";
 
-import { getColorByID } from "../../store/colorStore";
-
-const TripListing = ({ trip }) => {
-  const [_colorID, set__colorID] = useState(0);
-  const [base, set_base] = useState("");
-  const [secondary, set_secondary] = useState("");
-
-  useEffect(() => {
-    var color = getColorByID(trip.colorID);
-    set__colorID((crr) => color.id);
-    set_base((crr) => color.base);
-    set_secondary((crr) => color.secondary);
-  }, []);
-
+const TripListing = ({ tripTitle, tripDate, tripBase, tripSecondary }) => {
   return (
     <TripListingView
       style={{
-        shadowColor: base,
+        shadowColor: tripBase,
         shadowOffset: {
           width: 0,
           height: 5,
@@ -31,9 +18,9 @@ const TripListing = ({ trip }) => {
         elevation: 10,
       }}
     >
-      <InnerView style={{ backgroundColor: base }}>
+      <InnerView style={{ backgroundColor: tripBase }}>
         <LinearGradient
-          colors={[base, secondary]}
+          colors={[tripBase, tripSecondary]}
           style={{
             position: "absolute",
             left: 0,
@@ -45,10 +32,10 @@ const TripListing = ({ trip }) => {
           end={{ x: 2.75, y: 0 }}
         />
         <TopRow>
-          <DateText>{trip.date}</DateText>
+          <DateText>{tripDate}</DateText>
         </TopRow>
         <BottomRow>
-          <TitleText>{trip.title}</TitleText>
+          <TitleText>{tripTitle}</TitleText>
         </BottomRow>
       </InnerView>
     </TripListingView>

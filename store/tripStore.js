@@ -101,14 +101,21 @@ export const removeTrip = async (input_ID) => {
     } else {
       currentList = JSON.parse(currentList);
       var newList = [];
-      for (let i = 0; i < currentList.lengthl; i++) {
+      for (let i = 0; i < currentList.length; i++) {
         if (currentList[i].id !== input_ID) {
           newList.push(currentList[i]);
         }
       }
 
-      const sendValue = JSON.stringify(newList);
-      return await AsyncStorage.setItem(TRIPS_KEY, sendValue);
+      console.log("New List is: ", newList, newList.length);
+
+      //If no trips left, return null
+      if (newList.length === 0) {
+        return await AsyncStorage.removeItem(TRIPS_KEY);
+      } else {
+        const sendValue = JSON.stringify(newList);
+        return await AsyncStorage.setItem(TRIPS_KEY, sendValue);
+      }
     }
   } catch (err) {
     console.log("TS - removeTrip - ERR[1]: ", err);
@@ -145,6 +152,6 @@ function getFormattedDate() {
     "Dec",
   ];
   const d = new Date();
-  return (dt =
-    d.getDate() + " " + monthNames[d.getMonth() + 1] + ", " + d.getFullYear());
+  dt = d.getDate() + " " + monthNames[d.getMonth()] + ", " + d.getFullYear();
+  return dt;
 }
