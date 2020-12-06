@@ -237,6 +237,9 @@ const TripScreen = ({ navigation }) => {
       removePerson(trip.id, input_id).then((update) => {
         getPeople(trip.id).then((newPeople) => {
           set_peopleList(newPeople);
+          getActivities(trip.id).then((newActivities) => {
+            set_activitiesList(newActivities);
+          });
         });
       });
       Animated.timing(modal_editPerson_yPos, {
@@ -260,19 +263,24 @@ const TripScreen = ({ navigation }) => {
     input_name,
     input_cost,
     input_payerID,
+    input_payerName,
     input_pickerList
   ) => {
     if (action === "OPEN") {
-      set_peopleList_newActivity((crr) =>
-        build_peopleList_newActivity(peopleList)
-      );
-      set_addActivityModal_active((crr) => true);
-      Animated.timing(modal_addActivity_yPos, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: false,
-      }).start();
-      animateTripScreen("OPEN");
+      if (peopleList === null) {
+        // No action
+      } else {
+        set_peopleList_newActivity((crr) =>
+          build_peopleList_newActivity(peopleList)
+        );
+        set_addActivityModal_active((crr) => true);
+        Animated.timing(modal_addActivity_yPos, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: false,
+        }).start();
+        animateTripScreen("OPEN");
+      }
       //
     } else if (action === "CLOSE") {
       Animated.timing(modal_addActivity_yPos, {
@@ -291,6 +299,7 @@ const TripScreen = ({ navigation }) => {
         input_name,
         input_cost,
         input_payerID,
+        input_payerName,
         input_pickerList
       ).then((update) => {
         getActivities(trip.id).then((newTrips) => {
@@ -308,12 +317,6 @@ const TripScreen = ({ navigation }) => {
       }, 500);
       //
     }
-  };
-
-  const _getPersonName = (payerID) => {
-    getPersonName(trip.id, payerID).then((newName) => {
-      return newName;
-    });
   };
 
   useEffect(
@@ -482,8 +485,6 @@ const TripScreen = ({ navigation }) => {
               ) : (
                 <>
                   {Object.entries(activitiesList).map((act) => {
-                    var payerName = _getPersonName(act[1].payerID);
-                    console.log("Payer NAme is: ", payerName);
                     return (
                       <TouchableOpacity
                         key={act[1].id}
@@ -492,7 +493,7 @@ const TripScreen = ({ navigation }) => {
                         <ActivityListing
                           name={act[1].name}
                           cost={act[1].cost}
-                          payerName={payerName}
+                          payerName={act[1].payerName}
                           // payerName={"PayerName"}
                           pickerList={act[1].pickerList}
                           colorBase={colorBase}

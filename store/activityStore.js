@@ -10,7 +10,8 @@ export const addActivity = async (
   input_tripID,
   input_activityName,
   input_activityCost,
-  input_activityPayer,
+  input_activityPayerID,
+  input_activityPayerName,
   input_activityPickerList
 ) => {
   const ACTIVITY_KEY = "@activitiesList@" + input_tripID;
@@ -25,11 +26,11 @@ export const addActivity = async (
         tripID: input_tripID,
         name: input_activityName,
         cost: input_activityCost,
-        payerID: input_activityPayer,
+        payerID: input_activityPayerID,
+        payerName: input_activityPayerName,
         pickerList: input_activityPickerList,
       };
       currentList.push(activity);
-      console.log("Adding Activity to store c1: ", activity);
       // -----------------------------
       // TODO --- Update People store
       // -----------------------------
@@ -43,10 +44,10 @@ export const addActivity = async (
         tripID: input_tripID,
         name: input_activityName,
         cost: input_activityCost,
-        payerID: input_activityPayer,
+        payerID: input_activityPayerID,
+        payerName: input_activityPayerName,
         pickerList: input_activityPickerList,
       };
-      console.log("Adding Activity to store c2: ", activity);
       currentList.push(activity);
       // -----------------------------
       // TODO --- Update People store

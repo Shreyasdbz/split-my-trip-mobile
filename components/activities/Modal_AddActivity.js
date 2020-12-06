@@ -70,9 +70,30 @@ const Modal_AddActivity = ({
     if (payerID === null) {
       var tempPayerID = "";
       tempPayerID = pickerList[pickerList.length - 1].value;
-      handleAddActivityModal("SAVE", title, cost, tempPayerID, pickerList);
+      var tempPayerName = pickerList[pickerList.length - 1].name;
+      handleAddActivityModal(
+        "SAVE",
+        title,
+        cost,
+        tempPayerID,
+        tempPayerName,
+        pickerList
+      );
     } else {
-      handleAddActivityModal("SAVE", title, cost, payerID, pickerList);
+      var payerName = "";
+      for (let i = 0; i < pickerList.length; i++) {
+        if (pickerList[i].id === payerID) {
+          payerName = pickerList[i].name;
+        }
+      }
+      handleAddActivityModal(
+        "SAVE",
+        title,
+        cost,
+        payerID,
+        payerName,
+        pickerList
+      );
     }
   };
 

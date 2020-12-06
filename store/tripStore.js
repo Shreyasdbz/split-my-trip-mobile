@@ -107,7 +107,11 @@ export const removeTrip = async (input_ID) => {
         }
       }
 
-      console.log("New List is: ", newList, newList.length);
+      // Clear out people and activities from that trip
+      const PEOPLE_KEY = "@people_list@" + input_ID;
+      const ACTIVITY_KEY = "@activitiesList@" + input_ID;
+      AsyncStorage.removeItem(PEOPLE_KEY);
+      AsyncStorage.removeItem(ACTIVITY_KEY);
 
       //If no trips left, return null
       if (newList.length === 0) {
@@ -127,6 +131,18 @@ export const removeTrip = async (input_ID) => {
 // ------------------------------------------------------------------------
 export const removeTrips = async () => {
   try {
+    var currentList = await AsyncStorage.getItem(TRIPS_KEY);
+    if (currentList === null) {
+      // no action
+    } else {
+      currentList = JSON.parse(currentList);
+      for (let i = 0; i < currentList.length; i++) {
+        const PEOPLE_KEY = "@people_list@" + currentList[i].id;
+        const ACTIVITY_KEY = "@activitiesList@" + currentList[i].id;
+        AsyncStorage.removeItem(PEOPLE_KEY);
+        AsyncStorage.removeItem(ACTIVITY_KEY);
+      }
+    }
     return await AsyncStorage.removeItem(TRIPS_KEY);
   } catch (err) {
     console.log("TS - removeTrips - ERR[1]: ", err);
