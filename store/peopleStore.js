@@ -118,3 +118,27 @@ export const removePerson = async (input_tripID, input_personID) => {
     console.log("PS - editPerson - ERR[1]: ", err);
   }
 };
+
+// ------------------------------------------------------------------------
+// GET PERSON NAME BY ID
+// ------------------------------------------------------------------------
+export const getPersonName = async (input_tripID, input_personID) => {
+  const PEOPLE_KEY = "@people_list@" + input_tripID;
+  try {
+    var currentList = await AsyncStorage.getItem(PEOPLE_KEY);
+    if (currentList === null) {
+      console.log("PS -- getPersonName -- null list");
+    } else {
+      currentList = JSON.parse(currentList);
+      // console.log("Current list: ", currentList);
+      // console.log("PayerID: ", input_personID);
+      for (let i = 0; i < currentList.length; i++) {
+        if (currentList[i].id === input_personID) {
+          return currentList[i].name;
+        }
+      }
+    }
+  } catch (err) {
+    console.log("PS - getPersonName - ERR[1]: ", err);
+  }
+};

@@ -24,7 +24,13 @@ import {
   addPerson,
   editPerson,
   removePerson,
+  getPersonName,
 } from "../store/peopleStore";
+import {
+  addActivity,
+  getActivities,
+  removeActivity,
+} from "../store/activityStore";
 import { build_peopleList_newActivity } from "../helpers/listProcessors";
 
 const TripScreen = ({ navigation }) => {
@@ -253,8 +259,8 @@ const TripScreen = ({ navigation }) => {
     action,
     input_name,
     input_cost,
-    input_payer,
-    input_participants
+    input_payerID,
+    input_pickerList
   ) => {
     if (action === "OPEN") {
       set_peopleList_newActivity((crr) =>
@@ -280,6 +286,17 @@ const TripScreen = ({ navigation }) => {
       }, 500);
       //
     } else if (action === "SAVE") {
+      addActivity(
+        trip.id,
+        input_name,
+        input_cost,
+        input_payerID,
+        input_pickerList
+      ).then((update) => {
+        getActivities(trip.id).then((newTrips) => {
+          set_activitiesList((crr) => newTrips);
+        });
+      });
       Animated.timing(modal_addActivity_yPos, {
         toValue: 3000,
         duration: 200,
@@ -293,12 +310,21 @@ const TripScreen = ({ navigation }) => {
     }
   };
 
+  const _getPersonName = (payerID) => {
+    getPersonName(trip.id, payerID).then((newName) => {
+      return newName;
+    });
+  };
+
   useEffect(
     () => {
       set_colorBase(getColorBase(colorID));
       set_colorSecondary(getColorSecondary(colorID));
       getPeople(trip.id).then((newPeople) => {
         set_peopleList((crr) => newPeople);
+      });
+      getActivities(trip.id).then((trips) => {
+        set_activitiesList((crr) => trips);
       });
     },
     [],
@@ -350,8 +376,8 @@ const TripScreen = ({ navigation }) => {
             <Modal_AddActivity
               handleAddActivityModal={handleAddActivityModal}
               input_pickerList={peopleList_newActivity}
+              colorBase={colorBase}
             />
-            {/* {console.log(peopleList_newActivity)} */}
           </>
         ) : (
           <></>
@@ -455,19 +481,26 @@ const TripScreen = ({ navigation }) => {
                 </AddPersonNoteView>
               ) : (
                 <>
-                  <TouchableOpacity>
-                    <ActivityListing
-                      colorBase={colorBase}
-                      colorSecondary={colorSecondary}
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <ActivityListing
-                      colorBase={colorBase}
-                      colorSecondary={colorSecondary}
-                    />
-                  </TouchableOpacity>
-
+                  {Object.entries(activitiesList).map((act) => {
+                    var payerName = _getPersonName(act[1].payerID);
+                    console.log("Payer NAme is: ", payerName);
+                    return (
+                      <TouchableOpacity
+                        key={act[1].id}
+                        onPress={() => removeActivity(trip.id, act[1].id)}
+                      >
+                        <ActivityListing
+                          name={act[1].name}
+                          cost={act[1].cost}
+                          payerName={payerName}
+                          // payerName={"PayerName"}
+                          pickerList={act[1].pickerList}
+                          colorBase={colorBase}
+                          colorSecondary={colorSecondary}
+                        />
+                      </TouchableOpacity>
+                    );
+                  })}
                   <EmptyActivityListing />
                 </>
               )}

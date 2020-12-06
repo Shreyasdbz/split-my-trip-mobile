@@ -6,51 +6,25 @@ import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { Animated, Keyboard, Switch, Dimensions } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 
-const temp_pickerList = [
-  {
-    value: "27b13df-1238-a13f-b35d-6561bed40f50",
-    label: "Sam",
-  },
-  {
-    value: "c4343d-ee34-d8a-8aa1-113a2d0f80db",
-    label: "Alice",
-  },
-  {
-    value: "8a11be5-e635-e0ed-b62b-7f30f4f25eeb",
-    label: "Beth",
-  },
-];
-
-const Modal_AddActivity = ({ handleAddActivityModal, input_pickerList }) => {
+const Modal_AddActivity = ({
+  handleAddActivityModal,
+  input_pickerList,
+  colorBase,
+}) => {
   const [title, set_title] = useState("");
   const [cost, set_cost] = useState("");
-
-  const [pickerList, set_pickerList] = useState([
-    {
-      value: "27b13df-1238-a13f-b35d-6561bed40f50",
-      label: "Sam",
-    },
-    {
-      value: "c4343d-ee34-d8a-8aa1-113a2d0f80db",
-      label: "Alice",
-    },
-    {
-      value: "8a11be5-e635-e0ed-b62b-7f30f4f25eeb",
-      label: "Beth",
-    },
-  ]);
   const [payerID, set_payerID] = useState(null);
-  const [payerName, set_payerName] = useState(null);
+  const [pickerList, set_pickerList] = useState(input_pickerList);
 
   const name_error_height = useRef(new Animated.Value(0)).current;
   const cost_error_height = useRef(new Animated.Value(0)).current;
   const costInput = useRef();
 
-  const maxScrollHeight = Dimensions.get("window").height - 500;
+  const maxScrollHeight = Dimensions.get("window").height - 600;
   const payerPickPadding = useRef(new Animated.Value(0)).current; //
 
   const handlePickerPadding = (action, item) => {
-    var openLength = pickerList.length * 20 + 80;
+    var openLength = pickerList.length * 20 + 60;
     if (pickerList.length > 5) {
       openLength = 150;
     }
@@ -72,13 +46,33 @@ const Modal_AddActivity = ({ handleAddActivityModal, input_pickerList }) => {
     }
     if (action === "pick") {
       set_payerID((crr) => item.value);
-      set_payerName((crr) => item.label);
 
       Animated.timing(payerPickPadding, {
         toValue: 0,
         duration: 200,
         useNativeDriver: false,
       }).start();
+    }
+  };
+
+  const handleParticipantToggle = (personID) => {
+    var tempList = [];
+    for (let i = 0; i < pickerList.length; i++) {
+      if (pickerList[i].id === personID) {
+        pickerList[i].isParticipating = !pickerList[i].isParticipating;
+      }
+      tempList.push(pickerList[i]);
+    }
+    set_pickerList((crr) => tempList);
+  };
+
+  const handleSave = () => {
+    if (payerID === null) {
+      var tempPayerID = "";
+      tempPayerID = pickerList[pickerList.length - 1].value;
+      handleAddActivityModal("SAVE", title, cost, tempPayerID, pickerList);
+    } else {
+      handleAddActivityModal("SAVE", title, cost, payerID, pickerList);
     }
   };
 
@@ -117,10 +111,12 @@ const Modal_AddActivity = ({ handleAddActivityModal, input_pickerList }) => {
         </InputLabelView>
         <InputViewBox>
           <InputText
+            keyboardType={"number-pad"}
             onChangeText={(txt) => set_cost((crr) => txt)}
             value={cost}
             onSubmitEditing={() => Keyboard.dismiss()}
             ref={costInput}
+            returnKeyType={"done"}
           />
         </InputViewBox>
         <Animated_InputErrorBox style={{ height: cost_error_height }}>
@@ -132,13 +128,17 @@ const Modal_AddActivity = ({ handleAddActivityModal, input_pickerList }) => {
         <InputViewBox>
           <Animated_PickerContainer style={{ paddingBottom: payerPickPadding }}>
             <DropDownPicker
-              items={pickerList}
+              items={input_pickerList}
               containerStyle={{ height: 40, borderRadius: 8 }}
               style={{
                 backgroundColor: "#ebebeb",
                 zIndex: 2,
+                borderColor: "#ebebeb",
               }}
-              itemStyle={{ justifyContent: "flex-start" }}
+              itemStyle={{
+                justifyContent: "flex-start",
+                // borderColor: "#fff",
+              }}
               selectedtLabelStyle={{
                 color: "#39739d",
               }}
@@ -146,12 +146,39 @@ const Modal_AddActivity = ({ handleAddActivityModal, input_pickerList }) => {
                 textAlign: "left",
               }}
               dropDownStyle={{ backgroundColor: "white" }}
-              placeholder="Select who paid"
-              // onChangeItem={(item) => handlePickerPadding("pick", item)}
+              // placeholder="Select who paid"
+              defaultValue={pickerList[pickerList.length - 1].value}
+              onChangeItem={(item) => handlePickerPadding("pick", item)}
               onOpen={() => handlePickerPadding("open")}
               onClose={() => handlePickerPadding("close")}
             />
           </Animated_PickerContainer>
+        </InputViewBox>
+        <InputLabelView>
+          <InputLabelText>Select who participated</InputLabelText>
+        </InputLabelView>
+        <InputViewBox style={{ paddingTop: 10 }}>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            style={{ maxHeight: maxScrollHeight }}
+          >
+            {pickerList.map((per) => {
+              return (
+                <ParticipantLine key={per.id}>
+                  <ParticipantName>{per.name}</ParticipantName>
+                  <SwitchView>
+                    <Switch
+                      trackColor={{ false: "#ebebeb", true: colorBase }}
+                      thumbColor={per.isParticipating ? "white" : "white"}
+                      ios_backgroundColor="#ebebeb"
+                      onValueChange={() => handleParticipantToggle(per.id)}
+                      value={per.isParticipating}
+                    />
+                  </SwitchView>
+                </ParticipantLine>
+              );
+            })}
+          </ScrollView>
         </InputViewBox>
         <ButtonsView>
           <TouchableOpacity onPress={() => handleAddActivityModal("CLOSE")}>
@@ -160,7 +187,7 @@ const Modal_AddActivity = ({ handleAddActivityModal, input_pickerList }) => {
             </BtnView>
           </TouchableOpacity>
           <DividerBar />
-          <TouchableOpacity>
+          <TouchableOpacity onPress={handleSave}>
             <BtnView>
               <BtnText>Save</BtnText>
             </BtnView>
@@ -245,6 +272,34 @@ const InputLabelText = styled.Text`
   text-transform: uppercase;
   font-weight: 600;
   opacity: 0.6;
+`;
+
+const ParticipantsView = styled.View`
+  width: 100%;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.05);
+  /* border: 1px; */
+  border-radius: 8px;
+`;
+
+const ParticipantLine = styled.View`
+  width: 100%;
+  flex-direction: row;
+  align-items: center;
+  padding: 10px 10px;
+  border-radius: 8px;
+  margin-bottom: 2px;
+  border: 1px;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.025);
+  border-color: #ececec;
+`;
+
+const ParticipantName = styled.Text`
+  font-size: 18px;
+`;
+
+const SwitchView = styled.View`
+  position: absolute;
+  right: 10px;
 `;
 
 const ButtonsView = styled.View`

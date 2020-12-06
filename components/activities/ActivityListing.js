@@ -7,7 +7,14 @@ import { Dimensions } from "react-native";
 
 const windowHeight = Dimensions.get("window").height;
 
-const ActivityListing = ({ colorBase, colorSecondary }) => {
+const ActivityListing = ({
+  name,
+  cost,
+  payerName,
+  pickerList,
+  colorBase,
+  colorSecondary,
+}) => {
   return (
     <ActivityView
       style={{
@@ -37,24 +44,26 @@ const ActivityListing = ({ colorBase, colorSecondary }) => {
         <Header>
           <TopRow>
             <TitleView>
-              <TitleText>AirBnB</TitleText>
+              <TitleText>{name}</TitleText>
             </TitleView>
             <CostView>
               <CostTextWrapper>
-                <CostText>$450</CostText>
+                <CostText>$ {cost}</CostText>
               </CostTextWrapper>
             </CostView>
           </TopRow>
           <BottomRow>
             <PayerLabelText>Paid by: </PayerLabelText>
-            <PayerNameText>Abhishek</PayerNameText>
+            <PayerNameText>{payerName}</PayerNameText>
           </BottomRow>
         </Header>
         <Attendance>
           <AttendanceList>
-            <AttendeeText>Shreyas</AttendeeText>
-            <AttendeeText>Abhishek</AttendeeText>
-            <AttendeeText>Gaurav</AttendeeText>
+            {pickerList.map((per) => {
+              if (per.isParticipating === true) {
+                return <AttendeeText key={per.id}>{per.label}</AttendeeText>;
+              }
+            })}
           </AttendanceList>
         </Attendance>
       </Box>

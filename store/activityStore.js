@@ -11,7 +11,7 @@ export const addActivity = async (
   input_activityName,
   input_activityCost,
   input_activityPayer,
-  input_activityParticipants
+  input_activityPickerList
 ) => {
   const ACTIVITY_KEY = "@activitiesList@" + input_tripID;
 
@@ -19,15 +19,20 @@ export const addActivity = async (
     var currentList = await AsyncStorage.getItem(ACTIVITY_KEY);
     if (currentList === null) {
       // New Activity List
+      currentList = [];
       var activity = {
         id: uuid(),
         tripID: input_tripID,
         name: input_activityName,
         cost: input_activityCost,
-        payer: input_activityPayer,
-        participants: input_activityParticipants,
+        payerID: input_activityPayer,
+        pickerList: input_activityPickerList,
       };
       currentList.push(activity);
+      console.log("Adding Activity to store c1: ", activity);
+      // -----------------------------
+      // TODO --- Update People store
+      // -----------------------------
       const sendValue = JSON.stringify(currentList);
       return await AsyncStorage.setItem(ACTIVITY_KEY, sendValue);
     } else {
@@ -38,10 +43,14 @@ export const addActivity = async (
         tripID: input_tripID,
         name: input_activityName,
         cost: input_activityCost,
-        payer: input_activityPayer,
-        participants: input_activityParticipants,
+        payerID: input_activityPayer,
+        pickerList: input_activityPickerList,
       };
+      console.log("Adding Activity to store c2: ", activity);
       currentList.push(activity);
+      // -----------------------------
+      // TODO --- Update People store
+      // -----------------------------
       const sendValue = JSON.stringify(currentList);
       return await AsyncStorage.setItem(ACTIVITY_KEY, sendValue);
     }
@@ -99,7 +108,6 @@ export const removeActivity = async (input_tripID, input_activityID) => {
       console.log("AS -- removeActivity -- null list");
       return null;
     } else {
-      // Add to Activity List
       currentList = JSON.parse(currentList);
       var newList = [];
       for (let i = 0; i < currentList.length; i++) {
@@ -107,8 +115,13 @@ export const removeActivity = async (input_tripID, input_activityID) => {
           newList.push(currentList[i]);
         }
       }
-      const sendValue = JSON.stringify(newList);
-      return await AsyncStorage.setItem(ACTIVITY_KEY, sendValue);
+      // If list empty, remove KEY
+      if (newList.length === 0) {
+        return AsyncStorage.removeItem(ACTIVITY_KEY);
+      } else {
+        const sendValue = JSON.stringify(newList);
+        return await AsyncStorage.setItem(ACTIVITY_KEY, sendValue);
+      }
     }
   } catch (err) {
     console.log("TS -- addAcitivty -- ERR[1]: ", err);
@@ -126,7 +139,6 @@ export const getActivities = async (input_tripID) => {
     if (currentList === null) {
       return null;
     } else {
-      // Add to Activity List
       currentList = JSON.parse(currentList);
       return currentList;
     }

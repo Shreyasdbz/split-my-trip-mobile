@@ -9,9 +9,11 @@ export const build_peopleList_newActivity = (peopleList) => {
       name: p.name,
       value: p.id,
       label: p.name,
-      isParticipating: false,
+      isParticipating: true,
     };
     list.push(item);
   }
   return list;
 };
+
+export const build_participantList_from_pickerList = (tripID, pickerList) => {};
