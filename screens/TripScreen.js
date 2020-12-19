@@ -338,7 +338,7 @@ const TripScreen = ({ navigation }) => {
         duration: 300,
         useNativeDriver: false,
       }).start();
-      animateTripScreen("OPEN");
+      // animateTripScreen("OPEN");
       //
     } else if (action === "CLOSE") {
       Animated.timing(modal_splits_yPos, {
@@ -346,7 +346,7 @@ const TripScreen = ({ navigation }) => {
         duration: 300,
         useNativeDriver: false,
       }).start();
-      animateTripScreen("CLOSE");
+      // animateTripScreen("CLOSE");
       setTimeout(() => {
         set_splitsModal_active((crr) => false);
       }, 500);
@@ -376,7 +376,11 @@ const TripScreen = ({ navigation }) => {
       <Animated_Modal_SplitsView style={{ top: modal_splits_yPos }}>
         {splitsModal_active === true ? (
           <>
-            <Modal_Splits handleSplitsModal={handleSplitsModal} />
+            <Modal_Splits
+              handleSplitsModal={handleSplitsModal}
+              colorBase={colorBase}
+              colorSecondary={colorSecondary}
+            />
           </>
         ) : (
           <></>
@@ -678,7 +682,7 @@ const ComputeBtnView = styled.View`
   bottom: 50px;
   /* bottom: 200px; */
   align-items: center;
-  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.25);
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.125);
 `;
 
 const ComputeBtnWrapper = styled.View`

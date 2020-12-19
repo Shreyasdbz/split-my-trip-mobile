@@ -88,6 +88,7 @@ const ModalContainer = styled.View`
   justify-content: flex-start;
   padding: 20px 40px;
   padding-top: 200px;
+  background-color: white;
 `;
 
 const ModalBox = styled.View`
