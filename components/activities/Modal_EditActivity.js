@@ -6,8 +6,8 @@ import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { Animated, Keyboard, Switch, Dimensions } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 
-const Modal_AddActivity = ({
-  handleAddActivityModal,
+const Modal_EditActivity = ({
+  handleEditActivityModal,
   input_pickerList,
   colorBase,
 }) => {
@@ -71,7 +71,7 @@ const Modal_AddActivity = ({
       var tempPayerID = "";
       tempPayerID = pickerList[pickerList.length - 1].value;
       var tempPayerName = pickerList[pickerList.length - 1].name;
-      handleAddActivityModal(
+      handleEditActivityModal(
         "SAVE",
         title,
         cost,
@@ -86,7 +86,7 @@ const Modal_AddActivity = ({
           payerName = pickerList[i].name;
         }
       }
-      handleAddActivityModal(
+      handleEditActivityModal(
         "SAVE",
         title,
         cost,
@@ -109,10 +109,10 @@ const Modal_AddActivity = ({
     <ModalContainer>
       <ModalBox>
         <TitleView>
-          <TitleText>Add Activity</TitleText>
+          <TitleText>Edit Activity</TitleText>
         </TitleView>
         <CaptionView>
-          <CaptionText>Add a new activity/event to your trip</CaptionText>
+          <CaptionText>Update/Edit an activity you've added</CaptionText>
         </CaptionView>
         <InputLabelView>
           <InputLabelText>Activity Name</InputLabelText>

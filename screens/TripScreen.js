@@ -32,7 +32,10 @@ import {
   getActivities,
   removeActivity,
 } from "../store/activityStore";
-import { build_peopleList_newActivity } from "../helpers/listProcessors";
+import {
+  build_peopleList_newActivity,
+  build_peopleList_editActivity,
+} from "../helpers/listProcessors";
 
 const TripScreen = ({ navigation }) => {
   const [trip, set_trip] = useState(navigation.state.params.trip);
@@ -47,6 +50,8 @@ const TripScreen = ({ navigation }) => {
 
   const [activitiesList, set_activitiesList] = useState(null);
   const [peopleList_newActivity, set_peopleList_newActivity] = useState(null);
+  const [peopleList_editActivity, set_peopleList_editActivity] = useState(null);
+  const [currentEditActivity, set_currentEditActivity] = useState(null);
 
   // Modal Active States
   const [editTripModal_active, set_editTripModal_active] = useState(false);
@@ -328,6 +333,49 @@ const TripScreen = ({ navigation }) => {
   };
 
   // ----
+  // --- handle -- EDIT ACTIVITY MODAL ----
+  // ----
+  const handleEditActivityModal = (
+    action,
+    activityID,
+    input_name,
+    input_cost,
+    input_payerID,
+    input_payerName,
+    input_pickerList
+  ) => {
+    if (action === "OPEN") {
+      // open
+      for (let i = 0; i < activitiesList.length; i++) {
+        if (activitiesList[i].id === activityID) {
+          // do stuff
+          set_currentEditActivity((crr) => activitiesList[i]);
+          set_peopleList_editActivity((crr) => {
+            build_peopleList_editActivity(
+              peopleList,
+              activitiesList[i].pickerList
+            );
+          });
+          set_editActivityModal_active((crr) => true);
+          Animated.timing(modal_editActivity_yPos, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: false,
+          }).start();
+          animateTripScreen("OPEN");
+          // --
+        }
+      }
+    } else if (action === "CLOSE") {
+      // close
+    } else if (action === "DELETE") {
+      // delete
+    } else if (action === "SAVE") {
+      // save
+    }
+  };
+
+  // ----
   // --- handle -- SPLITS MODAL ----
   // ----
   const handleSplitsModal = (action) => {
@@ -387,6 +435,7 @@ const TripScreen = ({ navigation }) => {
         )}
       </Animated_Modal_SplitsView>
       {/*  ---------------------------------- MODAL - SPLTS ---------------------------------- */}
+
       {/*  ---------------------------------- MODAL - EDIT TRIP ---------------------------------- */}
       <Animated_Modal_EditTrip_View style={{ top: modal_editTrip_yPos }}>
         {editTripModal_active === true ? (
@@ -399,6 +448,7 @@ const TripScreen = ({ navigation }) => {
         )}
       </Animated_Modal_EditTrip_View>
       {/*  ---------------------------------- MODAL - EDIT TRIP ---------------------------------- */}
+
       {/*  ---------------------------------- MODAL - ADD PERSON ---------------------------------- */}
       <Animated_Modal_AddPerson_View style={{ top: modal_addPerson_yPos }}>
         {addPersonModal_active === true ? (
@@ -408,6 +458,7 @@ const TripScreen = ({ navigation }) => {
         )}
       </Animated_Modal_AddPerson_View>
       {/*  ---------------------------------- MODAL - ADD PERSON ---------------------------------- */}
+
       {/*  ---------------------------------- MODAL - EDIT PERSON ---------------------------------- */}
       <Animated_Modal_EditPerson_View style={{ top: modal_editPerson_yPos }}>
         {editPersonModal_active === true ? (
@@ -437,6 +488,23 @@ const TripScreen = ({ navigation }) => {
         )}
       </Animated_Modal_AddActivity_View>
       {/*  ---------------------------------- MODAL - ADD ACTIVITY ---------------------------------- */}
+
+      {/*  ---------------------------------- MODAL - EDIT ACTIVITY ---------------------------------- */}
+      <Animated_Modal_EditActivity_View style={{ top: modal_addActivity_yPos }}>
+        {editActivityModal_active === true ? (
+          <>
+            <Modal_EditActivity_View
+              handleEditActivityModal={handleEditActivityModal}
+              currentActivity={currentEditActivity}
+              input_pickerList={peopleList_editActivity}
+              colorBase={colorBase}
+            />
+          </>
+        ) : (
+          <></>
+        )}
+      </Animated_Modal_EditActivity_View>
+      {/*  ---------------------------------- MODAL - EDIT ACTIVITY ---------------------------------- */}
 
       {/*  Trip View ------------------------ BEGIN ------------------------  */}
       <Animated_TripView style={{ opacity: tripScreen_opacity }}>
@@ -538,7 +606,9 @@ const TripScreen = ({ navigation }) => {
                     return (
                       <TouchableOpacity
                         key={act[1].id}
-                        // onPress={() => removeActivity(trip.id, act[1].id)}
+                        onPress={() =>
+                          handleEditActivityModal("OPEN", act[1].id)
+                        }
                       >
                         <ActivityListing
                           name={act[1].name}
@@ -743,6 +813,16 @@ const Modal_AddActivity_View = styled.View`
   z-index: 1;
 `;
 const Animated_Modal_AddActivity_View = Animated.createAnimatedComponent(
+  Modal_AddActivity_View
+);
+
+const Modal_EditActivity_View = styled.View`
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 1;
+`;
+const Animated_Modal_EditActivity_View = Animated.createAnimatedComponent(
   Modal_AddActivity_View
 );
 

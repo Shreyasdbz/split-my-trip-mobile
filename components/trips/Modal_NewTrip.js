@@ -87,7 +87,7 @@ const ModalContainer = styled.View`
   align-items: center;
   justify-content: flex-start;
   padding: 20px 40px;
-  padding-top: 200px;
+  padding-top: 175px;
 `;
 
 const ModalBox = styled.View`
@@ -123,6 +123,7 @@ const CaptionText = styled.Text`
 const InputViewBox = styled.View`
   width: 100%;
   padding: 20px 10px;
+  padding-bottom: 0px;
 `;
 
 const InputText = styled.TextInput`
@@ -140,7 +141,6 @@ const ButtonsView = styled.View`
   flex-direction: row;
   align-items: center;
   justify-content: space-around;
-  padding-top: 10px;
 `;
 
 const BtnView_cancel = styled.View`

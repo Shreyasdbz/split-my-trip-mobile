@@ -1,12 +1,13 @@
 /** @format */
 
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
-import { SwipeableModal } from "react-native-swipeable-modal";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
 
 const Modal_Splits = ({ handleSplitsModal, colorBase, colorSecondary }) => {
+  // const [payList, set_payList] = useEffect(null);
+
   return (
     <ModalContainer>
       <ModalBox>
@@ -14,7 +15,7 @@ const Modal_Splits = ({ handleSplitsModal, colorBase, colorSecondary }) => {
           <TitleText>Splits Roundup</TitleText>
         </TitleView>
         <CaptionView>
-          <CaptionText>Total Trip Expense: $85</CaptionText>
+          <CaptionText>Total Trip Expenses: $85</CaptionText>
         </CaptionView>
         <PaymentBox>
           <TopRow>
@@ -81,7 +82,7 @@ const Modal_Splits = ({ handleSplitsModal, colorBase, colorSecondary }) => {
             </TransactionRow>
             <TransactionRow>
               <ActionText>Receive from</ActionText>
-              <TransactionPersonName style={{ color: colorBase }}>
+              <TransactionPersonName style={{ color: colorSecondary }}>
                 Sampson
               </TransactionPersonName>
               <TransactionAmount_Pos>$50</TransactionAmount_Pos>
@@ -209,18 +210,18 @@ const BottomRow = styled.View`
 const TransactionRow = styled.View`
   width: 100%;
   flex-direction: row;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
 `;
 
 const ActionText = styled.Text`
   font-size: 20px;
-  margin-right: 5px;
 `;
 
 const TransactionPersonName = styled.Text`
   font-size: 20px;
-  margin-right: 5px;
-  font-weight: 600;
+  margin: 0px 8px;
+  font-weight: 700;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.025);
 `;
 
 const TransactionAmount_Pos = styled.Text`
