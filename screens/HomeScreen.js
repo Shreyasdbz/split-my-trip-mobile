@@ -6,6 +6,7 @@ import { TouchableOpacity, ScrollView } from "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
 import { Animated, Keyboard } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { withNavigationFocus } from "react-navigation";
 
 import LoginScreen from "./LoginScreen";
 import HomeScreenHeader from "../components/misc/HomeScreenHeader";
@@ -156,22 +157,49 @@ const HomeScreen = ({ navigation }) => {
     });
   };
 
+  // var _subscribe = navigation.addListener("didFocus", () => {
+  //   getTrips().then((newTrips) => {
+  //     set_tripsList(newTrips);
+  //   });
+  // });
+
   var _subscribe = navigation.addListener("didFocus", () => {
+    // The screen is focused
+    // Call any action
     getTrips().then((newTrips) => {
       set_tripsList(newTrips);
     });
+    _subscribe.remove();
   });
 
-  useEffect(() => {
-    // Setup user
-    getUserInfo().then((newInfo) => {
-      set_userInfo((crr) => newInfo);
-    });
-    // Setup trips
-    getTrips().then((newTrips) => {
-      set_tripsList((crr) => newTrips);
-    });
-  }, []);
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     // Do something when the screen is focused
+  //     getTrips().then((newTrips) => {
+  //       set_tripsList(newTrips);
+  //     });
+
+  //     return () => {
+  //       // Do something when the screen is unfocused
+  //       // Useful for cleanup functions
+  //     };
+  //   }, [])
+  // );
+
+  useEffect(
+    () => {
+      // Setup user
+      getUserInfo().then((newInfo) => {
+        set_userInfo((crr) => newInfo);
+      });
+      // Setup trips
+      getTrips().then((newTrips) => {
+        set_tripsList((crr) => newTrips);
+      });
+    },
+    [],
+    [tripsList]
+  );
 
   return (
     <RootView>

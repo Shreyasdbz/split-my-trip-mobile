@@ -52,6 +52,9 @@ const ActivityListing = ({
               </CostTextWrapper>
             </CostView>
           </TopRow>
+          <MidRow_Divider_View>
+            <MidRow_Divider_Line></MidRow_Divider_Line>
+          </MidRow_Divider_View>
           <BottomRow>
             <PayerLabelText>Paid by: </PayerLabelText>
             <PayerNameText>{payerName}</PayerNameText>
@@ -100,6 +103,7 @@ const TitleView = styled.View`
   height: 100%;
   width: 75%;
   justify-content: center;
+  padding-left: 5px;
 `;
 
 const TitleText = styled.Text`
@@ -112,6 +116,7 @@ const TitleText = styled.Text`
 const CostView = styled.View`
   height: 100%;
   justify-content: center;
+  padding-right: 5px;
 `;
 
 const CostTextWrapper = styled.View`
@@ -123,6 +128,18 @@ const CostTextWrapper = styled.View`
 const CostText = styled.Text`
   font-weight: 700;
   font-size: 18px;
+`;
+
+const MidRow_Divider_View = styled.View`
+  align-items: center;
+  justify-content: center;
+  padding: 5px 10px;
+`;
+const MidRow_Divider_Line = styled.View`
+  height: 2px;
+  width: 100%;
+  border-radius: 15px;
+  background-color: rgba(255, 255, 255, 0.5);
 `;
 
 const BottomRow = styled.View`

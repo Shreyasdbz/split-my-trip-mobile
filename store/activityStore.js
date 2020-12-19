@@ -17,12 +17,13 @@ export const addActivity = async (
   const ACTIVITY_KEY = "@activitiesList@" + input_tripID;
 
   try {
+    var newID = uuid();
     var currentList = await AsyncStorage.getItem(ACTIVITY_KEY);
     if (currentList === null) {
       // New Activity List
       currentList = [];
       var activity = {
-        id: uuid(),
+        id: newID,
         tripID: input_tripID,
         name: input_activityName,
         cost: input_activityCost,
@@ -31,16 +32,14 @@ export const addActivity = async (
         pickerList: input_activityPickerList,
       };
       currentList.push(activity);
-      // -----------------------------
-      // TODO --- Update People store
-      // -----------------------------
+
       const sendValue = JSON.stringify(currentList);
       return await AsyncStorage.setItem(ACTIVITY_KEY, sendValue);
     } else {
       // Add to Activity List
       currentList = JSON.parse(currentList);
       var activity = {
-        id: uuid(),
+        id: newID,
         tripID: input_tripID,
         name: input_activityName,
         cost: input_activityCost,
@@ -49,9 +48,7 @@ export const addActivity = async (
         pickerList: input_activityPickerList,
       };
       currentList.push(activity);
-      // -----------------------------
-      // TODO --- Update People store
-      // -----------------------------
+
       const sendValue = JSON.stringify(currentList);
       return await AsyncStorage.setItem(ACTIVITY_KEY, sendValue);
     }

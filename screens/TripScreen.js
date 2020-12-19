@@ -12,6 +12,7 @@ import ActivityListing from "../components/activities/ActivityListing";
 import Modal_AddPerson from "../components/people/Modal_AddPerson";
 import Modal_EditPerson from "../components/people/Modal_EditPerson";
 import Modal_AddActivity from "../components/activities/Modal_AddActivity";
+import Modal_Splits from "../components/split/Modal_Splits";
 
 import {
   getColorByID,
@@ -45,7 +46,6 @@ const TripScreen = ({ navigation }) => {
   const [currentPersonEdit, set_currentPersonEdit] = useState(null);
 
   const [activitiesList, set_activitiesList] = useState(null);
-  const [currentActivityEdit, set_currentActivityEdit] = useState(null);
   const [peopleList_newActivity, set_peopleList_newActivity] = useState(null);
 
   // Modal Active States
@@ -58,6 +58,7 @@ const TripScreen = ({ navigation }) => {
   const [editActivityModal_active, set_editActivityModal_active] = useState(
     false
   );
+  const [splitsModal_active, set_splitsModal_active] = useState(false);
 
   // Animate State Variables
   const tripScreen_opacity = useRef(new Animated.Value(1)).current;
@@ -66,6 +67,7 @@ const TripScreen = ({ navigation }) => {
   const modal_editPerson_yPos = useRef(new Animated.Value(3000)).current;
   const modal_addActivity_yPos = useRef(new Animated.Value(3000)).current;
   const modal_editActivity_yPos = useRef(new Animated.Value(3000)).current;
+  const modal_splits_yPos = useRef(new Animated.Value(3000)).current;
 
   function animateTripScreen(action) {
     if (action === "OPEN") {
@@ -222,6 +224,9 @@ const TripScreen = ({ navigation }) => {
           set_peopleList(newPeople);
         });
       });
+      // -------------------------------
+      // TODO -- Triger update activity
+      // -------------------------------
       Animated.timing(modal_editPerson_yPos, {
         toValue: 3000,
         duration: 200,
@@ -242,6 +247,9 @@ const TripScreen = ({ navigation }) => {
           });
         });
       });
+      // -------------------------------
+      // TODO -- Triger update activity
+      // -------------------------------
       Animated.timing(modal_editPerson_yPos, {
         toValue: 3000,
         duration: 200,
@@ -319,6 +327,33 @@ const TripScreen = ({ navigation }) => {
     }
   };
 
+  // ----
+  // --- handle -- SPLITS MODAL ----
+  // ----
+  const handleSplitsModal = (action) => {
+    if (action === "OPEN") {
+      set_splitsModal_active((crr) => true);
+      Animated.timing(modal_splits_yPos, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: false,
+      }).start();
+      animateTripScreen("OPEN");
+      //
+    } else if (action === "CLOSE") {
+      Animated.timing(modal_splits_yPos, {
+        toValue: 3000,
+        duration: 300,
+        useNativeDriver: false,
+      }).start();
+      animateTripScreen("CLOSE");
+      setTimeout(() => {
+        set_splitsModal_active((crr) => false);
+      }, 500);
+      //
+    }
+  };
+
   useEffect(
     () => {
       set_colorBase(getColorBase(colorID));
@@ -337,6 +372,17 @@ const TripScreen = ({ navigation }) => {
 
   return (
     <Trip>
+      {/*  ---------------------------------- MODAL - SPLTS ---------------------------------- */}
+      <Animated_Modal_SplitsView style={{ top: modal_splits_yPos }}>
+        {splitsModal_active === true ? (
+          <>
+            <Modal_Splits handleSplitsModal={handleSplitsModal} />
+          </>
+        ) : (
+          <></>
+        )}
+      </Animated_Modal_SplitsView>
+      {/*  ---------------------------------- MODAL - SPLTS ---------------------------------- */}
       {/*  ---------------------------------- MODAL - EDIT TRIP ---------------------------------- */}
       <Animated_Modal_EditTrip_View style={{ top: modal_editTrip_yPos }}>
         {editTripModal_active === true ? (
@@ -488,7 +534,7 @@ const TripScreen = ({ navigation }) => {
                     return (
                       <TouchableOpacity
                         key={act[1].id}
-                        onPress={() => removeActivity(trip.id, act[1].id)}
+                        // onPress={() => removeActivity(trip.id, act[1].id)}
                       >
                         <ActivityListing
                           name={act[1].name}
@@ -509,15 +555,21 @@ const TripScreen = ({ navigation }) => {
           </ActivitySection>
           {/* Activity Section ------------------------ END */}
         </ScrollView>
-        <ComputeBtnView>
-          <TouchableOpacity>
-            <ComputeBtnWrapper>
-              <ComputeBtnWrapperInner>
-                <ComputeBtnText>Calculate Split</ComputeBtnText>
-              </ComputeBtnWrapperInner>
-            </ComputeBtnWrapper>
-          </TouchableOpacity>
-        </ComputeBtnView>
+        {activitiesList !== null ? (
+          <>
+            <ComputeBtnView>
+              <TouchableOpacity onPress={() => handleSplitsModal("OPEN")}>
+                <ComputeBtnWrapper>
+                  <ComputeBtnWrapperInner>
+                    <ComputeBtnText>Calculate Split</ComputeBtnText>
+                  </ComputeBtnWrapperInner>
+                </ComputeBtnWrapper>
+              </TouchableOpacity>
+            </ComputeBtnView>
+          </>
+        ) : (
+          <></>
+        )}
       </Animated_TripView>
     </Trip>
   );
@@ -688,4 +740,14 @@ const Modal_AddActivity_View = styled.View`
 `;
 const Animated_Modal_AddActivity_View = Animated.createAnimatedComponent(
   Modal_AddActivity_View
+);
+
+const Modal_SplitsView = styled.View`
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 1;
+`;
+const Animated_Modal_SplitsView = Animated.createAnimatedComponent(
+  Modal_SplitsView
 );
