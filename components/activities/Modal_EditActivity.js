@@ -8,11 +8,12 @@ import DropDownPicker from "react-native-dropdown-picker";
 
 const Modal_EditActivity = ({
   handleEditActivityModal,
+  currentActivity,
   input_pickerList,
   colorBase,
 }) => {
-  const [title, set_title] = useState("");
-  const [cost, set_cost] = useState("");
+  const [title, set_title] = useState(currentActivity.name);
+  const [cost, set_cost] = useState(currentActivity.cost);
   const [payerID, set_payerID] = useState(null);
   const [pickerList, set_pickerList] = useState(input_pickerList);
 
@@ -111,9 +112,9 @@ const Modal_EditActivity = ({
         <TitleView>
           <TitleText>Edit Activity</TitleText>
         </TitleView>
-        <CaptionView>
+        {/* <CaptionView>
           <CaptionText>Update/Edit an activity you've added</CaptionText>
-        </CaptionView>
+        </CaptionView> */}
         <InputLabelView>
           <InputLabelText>Activity Name</InputLabelText>
         </InputLabelView>
@@ -168,7 +169,7 @@ const Modal_EditActivity = ({
               }}
               dropDownStyle={{ backgroundColor: "white" }}
               // placeholder="Select who paid"
-              defaultValue={pickerList[pickerList.length - 1].value}
+              defaultValue={currentActivity.payerID}
               onChangeItem={(item) => handlePickerPadding("pick", item)}
               onOpen={() => handlePickerPadding("open")}
               onClose={() => handlePickerPadding("close")}

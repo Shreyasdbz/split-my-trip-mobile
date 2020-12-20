@@ -351,19 +351,18 @@ const TripScreen = ({ navigation }) => {
         if (activitiesList[i].id === activityID) {
           // do stuff
           set_currentEditActivity((crr) => activitiesList[i]);
-          set_peopleList_editActivity((crr) => {
-            build_peopleList_editActivity(
-              peopleList,
-              activitiesList[i].pickerList
-            );
-          });
-          // set_editActivityModal_active((crr) => true);
-          // Animated.timing(modal_editActivity_yPos, {
-          //   toValue: 0,
-          //   duration: 300,
-          //   useNativeDriver: false,
-          // }).start();
-          // animateTripScreen("OPEN");
+          var newList = build_peopleList_editActivity(
+            peopleList,
+            activitiesList[i].pickerList
+          );
+          set_peopleList_editActivity((crr) => newList);
+          set_editActivityModal_active((crr) => true);
+          Animated.timing(modal_editActivity_yPos, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: false,
+          }).start();
+          animateTripScreen("OPEN");
           // --
         }
       }

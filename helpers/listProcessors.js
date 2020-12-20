@@ -16,32 +16,35 @@ export const build_peopleList_newActivity = (peopleList) => {
   return list;
 };
 
-function idDoesntExistInPickerList(inputID, pickerList) {
-  var found = false;
+function alreadyExists(inputID, pickerList) {
+  var exists = false;
   for (let i = 0; i < pickerList.length; i++) {
     if (inputID === pickerList[i].id) {
-      found = true;
+      exists = true;
     }
   }
-  if (found === false) {
-    return true;
-  } else {
-    return false;
-  }
+  return exists;
 }
 
 export const build_peopleList_editActivity = (
   current_peopleList,
   activity_pickerList
 ) => {
-  var list = activity_pickerList;
   // add in new people that aren't in current_peopleList
-  for (let i = 0; i < current_peopleList; i++) {
-    // see if doesn't exists in activity picker list
-    if (
-      idDoesntExistInPickerList(current_peopleList[i].id, activity_pickerList)
-    ) {
-      // add to activity_pickerList
+  for (let i = 0; i < current_peopleList.length; i++) {
+    // if found, update
+    if (alreadyExists(current_peopleList[i].id, activity_pickerList)) {
+      // update
+      for (let a = 0; a < activity_pickerList.length; a++) {
+        if (current_peopleList[i].id === activity_pickerList[a].id) {
+          activity_pickerList[a].name = current_peopleList[i].name;
+          activity_pickerList[a].value = current_peopleList[i].id;
+          activity_pickerList[a].label = current_peopleList[i].name;
+        }
+      }
+    }
+    // else: if doesn't exist: new
+    else {
       var item = {
         id: current_peopleList[i].id,
         name: current_peopleList[i].name,
@@ -52,7 +55,7 @@ export const build_peopleList_editActivity = (
       activity_pickerList.push(item);
     }
   }
-  return list;
+  return activity_pickerList;
 };
 
 export const build_participantList_from_pickerList = (tripID, pickerList) => {};
