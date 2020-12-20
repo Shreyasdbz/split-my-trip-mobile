@@ -202,7 +202,7 @@ const Modal_EditActivity = ({
           </ScrollView>
         </InputViewBox>
         <ButtonsView>
-          <TouchableOpacity onPress={() => handleAddActivityModal("CLOSE")}>
+          <TouchableOpacity onPress={() => handleEditActivityModal("CLOSE")}>
             <BtnView>
               <BtnText>Cancel</BtnText>
             </BtnView>
@@ -219,7 +219,7 @@ const Modal_EditActivity = ({
   );
 };
 
-export default Modal_AddActivity;
+export default Modal_EditActivity;
 
 const ModalContainer = styled.View`
   height: 100%;

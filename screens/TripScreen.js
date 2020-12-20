@@ -12,6 +12,7 @@ import ActivityListing from "../components/activities/ActivityListing";
 import Modal_AddPerson from "../components/people/Modal_AddPerson";
 import Modal_EditPerson from "../components/people/Modal_EditPerson";
 import Modal_AddActivity from "../components/activities/Modal_AddActivity";
+import Modal_EditActivity from "../components/activities/Modal_EditActivity";
 import Modal_Splits from "../components/split/Modal_Splits";
 
 import {
@@ -356,13 +357,13 @@ const TripScreen = ({ navigation }) => {
               activitiesList[i].pickerList
             );
           });
-          set_editActivityModal_active((crr) => true);
-          Animated.timing(modal_editActivity_yPos, {
-            toValue: 0,
-            duration: 300,
-            useNativeDriver: false,
-          }).start();
-          animateTripScreen("OPEN");
+          // set_editActivityModal_active((crr) => true);
+          // Animated.timing(modal_editActivity_yPos, {
+          //   toValue: 0,
+          //   duration: 300,
+          //   useNativeDriver: false,
+          // }).start();
+          // animateTripScreen("OPEN");
           // --
         }
       }
@@ -490,10 +491,12 @@ const TripScreen = ({ navigation }) => {
       {/*  ---------------------------------- MODAL - ADD ACTIVITY ---------------------------------- */}
 
       {/*  ---------------------------------- MODAL - EDIT ACTIVITY ---------------------------------- */}
-      <Animated_Modal_EditActivity_View style={{ top: modal_addActivity_yPos }}>
+      <Animated_Modal_EditActivity_View
+        style={{ top: modal_editActivity_yPos }}
+      >
         {editActivityModal_active === true ? (
           <>
-            <Modal_EditActivity_View
+            <Modal_EditActivity
               handleEditActivityModal={handleEditActivityModal}
               currentActivity={currentEditActivity}
               input_pickerList={peopleList_editActivity}
@@ -823,7 +826,7 @@ const Modal_EditActivity_View = styled.View`
   z-index: 1;
 `;
 const Animated_Modal_EditActivity_View = Animated.createAnimatedComponent(
-  Modal_AddActivity_View
+  Modal_EditActivity_View
 );
 
 const Modal_SplitsView = styled.View`
