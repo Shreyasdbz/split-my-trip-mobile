@@ -1,12 +1,19 @@
 /** @format */
 
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
 
-const Modal_Splits = ({ handleSplitsModal, colorBase, colorSecondary }) => {
-  // const [payList, set_payList] = useEffect(null);
+const Modal_Splits = ({
+  handleSplitsModal,
+  splits,
+  colorBase,
+  colorSecondary,
+}) => {
+  // const [splitList, set_splitList] = useEffect(splits);
+  const [splitList, set_splitList] = useState(splits);
+  console.log("Splits: ", splitList);
 
   return (
     <ModalContainer>

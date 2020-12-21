@@ -37,6 +37,7 @@ import {
   build_peopleList_newActivity,
   build_peopleList_editActivity,
 } from "../helpers/listProcessors";
+import { makeSplits } from "../helpers/splitsCalculator";
 
 const TripScreen = ({ navigation }) => {
   const [trip, set_trip] = useState(navigation.state.params.trip);
@@ -53,6 +54,8 @@ const TripScreen = ({ navigation }) => {
   const [peopleList_newActivity, set_peopleList_newActivity] = useState(null);
   const [peopleList_editActivity, set_peopleList_editActivity] = useState(null);
   const [currentEditActivity, set_currentEditActivity] = useState(null);
+
+  const [splits, set_splits] = useState(null);
 
   // Modal Active States
   const [editTripModal_active, set_editTripModal_active] = useState(false);
@@ -228,11 +231,11 @@ const TripScreen = ({ navigation }) => {
       editPerson(trip.id, input_id, input_name).then(() => {
         getPeople(trip.id).then((newPeople) => {
           set_peopleList(newPeople);
+          // -------------------------------
+          // TODO -- Triger update activity
+          // -------------------------------
         });
       });
-      // -------------------------------
-      // TODO -- Triger update activity
-      // -------------------------------
       Animated.timing(modal_editPerson_yPos, {
         toValue: 3000,
         duration: 200,
@@ -250,12 +253,12 @@ const TripScreen = ({ navigation }) => {
           set_peopleList(newPeople);
           getActivities(trip.id).then((newActivities) => {
             set_activitiesList(newActivities);
+            // -------------------------------
+            // TODO -- Triger update activity
+            // -------------------------------
           });
         });
       });
-      // -------------------------------
-      // TODO -- Triger update activity
-      // -------------------------------
       Animated.timing(modal_editPerson_yPos, {
         toValue: 3000,
         duration: 200,
@@ -362,12 +365,22 @@ const TripScreen = ({ navigation }) => {
             duration: 300,
             useNativeDriver: false,
           }).start();
-          animateTripScreen("OPEN");
+          // animateTripScreen("OPEN");
           // --
         }
       }
     } else if (action === "CLOSE") {
       // close
+      Animated.timing(modal_editActivity_yPos, {
+        toValue: 3000,
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+      // animateTripScreen("CLOSE");
+      setTimeout(() => {
+        set_editActivityModal_active((crr) => false);
+        set_currentEditActivity((crr) => null);
+      }, 500);
     } else if (action === "DELETE") {
       // delete
     } else if (action === "SAVE") {
@@ -380,6 +393,8 @@ const TripScreen = ({ navigation }) => {
   // ----
   const handleSplitsModal = (action) => {
     if (action === "OPEN") {
+      var transactions = makeSplits(peopleList, activitiesList);
+      set_splits((crr) => transactions);
       set_splitsModal_active((crr) => true);
       Animated.timing(modal_splits_yPos, {
         toValue: 0,
@@ -420,22 +435,6 @@ const TripScreen = ({ navigation }) => {
 
   return (
     <Trip>
-      {/*  ---------------------------------- MODAL - SPLTS ---------------------------------- */}
-      <Animated_Modal_SplitsView style={{ top: modal_splits_yPos }}>
-        {splitsModal_active === true ? (
-          <>
-            <Modal_Splits
-              handleSplitsModal={handleSplitsModal}
-              colorBase={colorBase}
-              colorSecondary={colorSecondary}
-            />
-          </>
-        ) : (
-          <></>
-        )}
-      </Animated_Modal_SplitsView>
-      {/*  ---------------------------------- MODAL - SPLTS ---------------------------------- */}
-
       {/*  ---------------------------------- MODAL - EDIT TRIP ---------------------------------- */}
       <Animated_Modal_EditTrip_View style={{ top: modal_editTrip_yPos }}>
         {editTripModal_active === true ? (
@@ -507,6 +506,23 @@ const TripScreen = ({ navigation }) => {
         )}
       </Animated_Modal_EditActivity_View>
       {/*  ---------------------------------- MODAL - EDIT ACTIVITY ---------------------------------- */}
+
+      {/*  ---------------------------------- MODAL - SPLTS ---------------------------------- */}
+      <Animated_Modal_SplitsView style={{ top: modal_splits_yPos }}>
+        {splitsModal_active === true ? (
+          <>
+            <Modal_Splits
+              handleSplitsModal={handleSplitsModal}
+              splits={splits}
+              colorBase={colorBase}
+              colorSecondary={colorSecondary}
+            />
+          </>
+        ) : (
+          <></>
+        )}
+      </Animated_Modal_SplitsView>
+      {/*  ---------------------------------- MODAL - SPLTS ---------------------------------- */}
 
       {/*  Trip View ------------------------ BEGIN ------------------------  */}
       <Animated_TripView style={{ opacity: tripScreen_opacity }}>
