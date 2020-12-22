@@ -366,7 +366,7 @@ const TripScreen = ({ navigation }) => {
             duration: 300,
             useNativeDriver: false,
           }).start();
-          // animateTripScreen("OPEN");
+          animateTripScreen("OPEN");
           // --
         }
       }
@@ -377,15 +377,17 @@ const TripScreen = ({ navigation }) => {
         duration: 200,
         useNativeDriver: false,
       }).start();
-      // animateTripScreen("CLOSE");
+      animateTripScreen("CLOSE");
       setTimeout(() => {
         set_editActivityModal_active((crr) => false);
         set_currentEditActivity((crr) => null);
       }, 500);
     } else if (action === "DELETE") {
       // delete
+      // --
     } else if (action === "SAVE") {
       // save
+      // --
     }
   };
 

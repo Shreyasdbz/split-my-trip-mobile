@@ -157,12 +157,6 @@ const HomeScreen = ({ navigation }) => {
     });
   };
 
-  // var _subscribe = navigation.addListener("didFocus", () => {
-  //   getTrips().then((newTrips) => {
-  //     set_tripsList(newTrips);
-  //   });
-  // });
-
   var _subscribe = navigation.addListener("didFocus", () => {
     // The screen is focused
     // Call any action
@@ -171,20 +165,6 @@ const HomeScreen = ({ navigation }) => {
     });
     _subscribe.remove();
   });
-
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     // Do something when the screen is focused
-  //     getTrips().then((newTrips) => {
-  //       set_tripsList(newTrips);
-  //     });
-
-  //     return () => {
-  //       // Do something when the screen is unfocused
-  //       // Useful for cleanup functions
-  //     };
-  //   }, [])
-  // );
 
   useEffect(
     () => {

@@ -16,8 +16,6 @@ const Modal_Splits = ({
   const [splitList, set_splitList] = useState(splits);
   const windowWidth = Dimensions.get("window").width;
 
-  // console.log(splitList);
-
   return (
     <ModalContainer>
       <ModalBox>

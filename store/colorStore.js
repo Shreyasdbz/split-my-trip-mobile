@@ -43,12 +43,19 @@ export const colorPalette = [
     base: "#35ee84",
     secondary: "#6FDCFF",
   },
+  // {
+  //   id: 7,
+  //   sortOrder: 7,
+  //   colorName: "sky",
+  //   base: "#6FCBFF",
+  //   secondary: "#FFF96F",
+  // },
   {
-    id: 7,
-    sortOrder: 7,
-    colorName: "sky",
-    base: "#6FCBFF",
-    secondary: "#FFF96F",
+    id: 17,
+    sortOrder: 17,
+    colorName: "water",
+    base: "#09C6F9",
+    secondary: "#045DE9",
   },
   {
     id: 8,
@@ -67,6 +74,13 @@ export const colorPalette = [
   {
     id: 10,
     sortOrder: 10,
+    colorName: "eggplant",
+    base: "#D387AB",
+    secondary: "#E899DC",
+  },
+  {
+    id: 11,
+    sortOrder: 11,
     colorName: "test",
     base: "#ff6fab",
     secondary: "#6fd6ff",
