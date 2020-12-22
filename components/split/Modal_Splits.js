@@ -2,100 +2,103 @@
 
 import React, { useState } from "react";
 import styled from "styled-components";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { LinearGradient } from "expo-linear-gradient";
+import { Dimensions } from "react-native";
 
 const Modal_Splits = ({
   handleSplitsModal,
   splits,
+  totalCost,
   colorBase,
   colorSecondary,
 }) => {
-  // const [splitList, set_splitList] = useEffect(splits);
   const [splitList, set_splitList] = useState(splits);
-  console.log("Splits: ", splitList);
+  const windowWidth = Dimensions.get("window").width;
+
+  // console.log(splitList);
 
   return (
     <ModalContainer>
       <ModalBox>
-        <TitleView>
-          <TitleText>Splits Roundup</TitleText>
-        </TitleView>
-        <CaptionView>
-          <CaptionText>Total Trip Expenses: $85</CaptionText>
-        </CaptionView>
-        <PaymentBox>
-          <TopRow>
-            <LinearGradient
-              colors={[colorBase, colorSecondary]}
-              style={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                top: 0,
-                height: 120,
-              }}
-              start={{ x: 0.25, y: 0 }}
-              end={{ x: 2.5, y: 0 }}
-            />
+        <ScrollView
+          style={{
+            width: windowWidth,
+            paddingLeft: 20,
+            paddingRight: 20,
+            paddingBottom: 100,
+          }}
+          showsVerticalScrollIndicator={false}
+        >
+          <TitleView>
+            <TitleText>Splits Roundup</TitleText>
+          </TitleView>
+          <CaptionView>
+            <CaptionText>Total Trip Expenses: ${totalCost}</CaptionText>
+          </CaptionView>
+          {Object.entries(splitList).map((split) => {
+            return (
+              <PaymentBox key={split[1].id}>
+                <TopRow>
+                  <LinearGradient
+                    colors={[colorBase, colorSecondary]}
+                    style={{
+                      position: "absolute",
+                      left: 0,
+                      right: 0,
+                      top: 0,
+                      height: 120,
+                    }}
+                    start={{ x: 0.25, y: 0 }}
+                    end={{ x: 2.5, y: 0 }}
+                  />
 
-            <NameTitle_View>
-              <NameTitle_Text>John</NameTitle_Text>
-            </NameTitle_View>
-          </TopRow>
-          <BottomRow>
-            <TransactionRow>
-              <ActionText>Pay</ActionText>
-              <TransactionPersonName style={{ color: colorBase }}>
-                Abby
-              </TransactionPersonName>
-              <TransactionAmount_Neg>$50</TransactionAmount_Neg>
-            </TransactionRow>
-            <TransactionRow>
-              <ActionText>Receive from</ActionText>
-              <TransactionPersonName style={{ color: colorBase }}>
-                Sampson
-              </TransactionPersonName>
-              <TransactionAmount_Pos>$50</TransactionAmount_Pos>
-            </TransactionRow>
-          </BottomRow>
-        </PaymentBox>
-        <PaymentBox>
-          <TopRow>
-            <LinearGradient
-              colors={[colorBase, colorSecondary]}
-              style={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                top: 0,
-                height: 120,
-              }}
-              start={{ x: 0.25, y: 0 }}
-              end={{ x: 2.5, y: 0 }}
-            />
-
-            <NameTitle_View>
-              <NameTitle_Text>John</NameTitle_Text>
-            </NameTitle_View>
-          </TopRow>
-          <BottomRow>
-            <TransactionRow>
-              <ActionText>Pay</ActionText>
-              <TransactionPersonName style={{ color: colorBase }}>
-                Abby
-              </TransactionPersonName>
-              <TransactionAmount_Neg>$50</TransactionAmount_Neg>
-            </TransactionRow>
-            <TransactionRow>
-              <ActionText>Receive from</ActionText>
-              <TransactionPersonName style={{ color: colorSecondary }}>
-                Sampson
-              </TransactionPersonName>
-              <TransactionAmount_Pos>$50</TransactionAmount_Pos>
-            </TransactionRow>
-          </BottomRow>
-        </PaymentBox>
+                  <NameTitle_View>
+                    <NameTitle_Text>{split[1].name}</NameTitle_Text>
+                  </NameTitle_View>
+                </TopRow>
+                <BottomRow>
+                  {split[1].transactions.map((transaction) => {
+                    if (transaction.length !== 0) {
+                      if (transaction.type === "PAY") {
+                        return (
+                          <TransactionRow key={transaction.spitPersonID}>
+                            <ActionText>Pay</ActionText>
+                            <TransactionPersonName style={{ color: colorBase }}>
+                              {transaction.name}
+                            </TransactionPersonName>
+                            <TransactionAmount_Neg>
+                              ${transaction.amount}
+                            </TransactionAmount_Neg>
+                          </TransactionRow>
+                        );
+                      } else if (transaction.type === "GET") {
+                        return (
+                          <TransactionRow key={transaction.spitPersonID}>
+                            <ActionText>Receive from</ActionText>
+                            <TransactionPersonName style={{ color: colorBase }}>
+                              {transaction.name}
+                            </TransactionPersonName>
+                            <TransactionAmount_Pos>
+                              ${transaction.amount}
+                            </TransactionAmount_Pos>
+                          </TransactionRow>
+                        );
+                      }
+                    } else {
+                      return (
+                        <TransactionRow key={transaction.splitPersonID}>
+                          <ActionText>No transactions need :)</ActionText>
+                        </TransactionRow>
+                      );
+                    }
+                  })}
+                </BottomRow>
+              </PaymentBox>
+            );
+          })}
+          <EmptyPayBox />
+        </ScrollView>
         <ButtonsView>
           <TouchableOpacity onPress={() => handleSplitsModal("CLOSE")}>
             <BtnView>
@@ -127,13 +130,14 @@ const ModalBox = styled.View`
   border-radius: 20px;
   align-items: center;
   /* justify-content: center; */
-  padding: 20px 20px;
+  padding: 00px 20px;
 `;
 
 const TitleView = styled.View`
   width: 100%;
   align-items: center;
   justify-content: center;
+  padding-top: 20px;
 `;
 
 const TitleText = styled.Text`
@@ -142,7 +146,11 @@ const TitleText = styled.Text`
 `;
 
 const CaptionView = styled.View`
+  margin-top: 10px;
   margin-bottom: 20px;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
 `;
 
 const CaptionText = styled.Text`
@@ -239,4 +247,9 @@ const TransactionAmount_Pos = styled.Text`
 const TransactionAmount_Neg = styled.Text`
   font-size: 20px;
   margin-right: 5px;
+`;
+
+const EmptyPayBox = styled.Text`
+  width: 100%;
+  height: 100px;
 `;

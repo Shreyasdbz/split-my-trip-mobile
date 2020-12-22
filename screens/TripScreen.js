@@ -56,6 +56,7 @@ const TripScreen = ({ navigation }) => {
   const [currentEditActivity, set_currentEditActivity] = useState(null);
 
   const [splits, set_splits] = useState(null);
+  const [totalCost, set_totalCost] = useState(0);
 
   // Modal Active States
   const [editTripModal_active, set_editTripModal_active] = useState(false);
@@ -393,8 +394,14 @@ const TripScreen = ({ navigation }) => {
   // ----
   const handleSplitsModal = (action) => {
     if (action === "OPEN") {
+      // Calculate Total Cost
+      for (let i = 0; i < activitiesList.length; i++) {
+        set_totalCost((crr) => (crr += parseFloat(activitiesList[i].cost)));
+      }
+      // Calculate Splits
       var transactions = makeSplits(peopleList, activitiesList);
       set_splits((crr) => transactions);
+      // Rest
       set_splitsModal_active((crr) => true);
       Animated.timing(modal_splits_yPos, {
         toValue: 0,
@@ -514,6 +521,7 @@ const TripScreen = ({ navigation }) => {
             <Modal_Splits
               handleSplitsModal={handleSplitsModal}
               splits={splits}
+              totalCost={totalCost}
               colorBase={colorBase}
               colorSecondary={colorSecondary}
             />

@@ -99,7 +99,7 @@ export const makeSplits = (participantsList, activitiesList) => {
               type: "PAY",
               name: positive[p].name,
               spitPersonID: positive[p].id,
-              amount: oweAmount_neg,
+              amount: Math.round(Math.abs(oweAmount_neg) * 100) / 100,
             });
           }
           if (splits[s].id === positive[p].id) {
@@ -108,7 +108,7 @@ export const makeSplits = (participantsList, activitiesList) => {
               type: "GET",
               name: negative[n].name,
               spitPersonID: negative[n].id,
-              amount: oweAmount_neg,
+              amount: Math.round(Math.abs(oweAmount_neg) * 100) / 100,
             });
           }
         }
@@ -117,6 +117,7 @@ export const makeSplits = (participantsList, activitiesList) => {
         positive[p].balance !== 0 &&
         negative[n].balance !== 0
       ) {
+        // CASE - Positive < Negative
         var tempBal =
           -1 * Math.abs(positive[p].balance - Math.abs(negative[n].balance));
         negative[n].balance = tempBal;
@@ -131,7 +132,7 @@ export const makeSplits = (participantsList, activitiesList) => {
               type: "PAY",
               name: positive[p].name,
               spitPersonID: positive[p].id,
-              amount: oweAmount,
+              amount: Math.round(Math.abs(oweAmount) * 100) / 100,
             });
           }
           if (splits[s].id === positive[p].id) {
@@ -140,12 +141,13 @@ export const makeSplits = (participantsList, activitiesList) => {
               type: "GET",
               name: negative[n].name,
               spitPersonID: negative[n].id,
-              amount: oweAmount,
+              amount: Math.round(Math.abs(oweAmount) * 100) / 100,
             });
           }
         }
       } else {
         if (positive[p].balance !== 0 && negative[n].balance !== 0) {
+          // CASE - Positive = Negative
           //   cycle through splits List to add
           for (let s = 0; s < splits.length; s++) {
             // Paying someone
@@ -154,7 +156,7 @@ export const makeSplits = (participantsList, activitiesList) => {
                 type: "PAY",
                 name: positive[p].name,
                 spitPersonID: positive[p].id,
-                amount: oweAmount,
+                amount: Math.round(Math.abs(positive[p].balance) * 100) / 100,
               });
             }
             if (splits[s].id === positive[p].id) {
@@ -163,7 +165,7 @@ export const makeSplits = (participantsList, activitiesList) => {
                 type: "GET",
                 name: negative[n].name,
                 spitPersonID: negative[n].id,
-                amount: oweAmount,
+                amount: Math.round(Math.abs(positive[p].balance) * 100) / 100,
               });
             }
           }
