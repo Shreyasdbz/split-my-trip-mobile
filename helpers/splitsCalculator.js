@@ -54,7 +54,14 @@ export const makeSplits = (participantsList, activitiesList) => {
         }
       }
       if (participated === true) {
-        pList[i].pay += aList[j].cost / aList[j].pickerList.length;
+        // Figure out what the split would be from the picker list
+        var numParticipating = 0;
+        for (let l = 0; l < aList[j].pickerList.length; l++) {
+          if (aList[j].pickerList[l].isParticipating === true) {
+            numParticipating += 1;
+          }
+        }
+        pList[i].pay += aList[j].cost / numParticipating;
       }
     }
 

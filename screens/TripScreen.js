@@ -397,9 +397,11 @@ const TripScreen = ({ navigation }) => {
   const handleSplitsModal = (action) => {
     if (action === "OPEN") {
       // Calculate Total Cost
+      var costSoFar = 0;
       for (let i = 0; i < activitiesList.length; i++) {
-        set_totalCost((crr) => (crr += parseFloat(activitiesList[i].cost)));
+        costSoFar += parseFloat(activitiesList[i].cost);
       }
+      set_totalCost((crr) => costSoFar);
       // Calculate Splits
       var transactions = makeSplits(peopleList, activitiesList);
       set_splits((crr) => transactions);
