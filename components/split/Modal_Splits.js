@@ -57,36 +57,28 @@ const Modal_Splits = ({
                 </TopRow>
                 <BottomRow>
                   {split[1].transactions.map((transaction) => {
-                    if (transaction.length !== 0) {
-                      if (transaction.type === "PAY") {
-                        return (
-                          <TransactionRow key={transaction.spitPersonID}>
-                            <ActionText>Pay</ActionText>
-                            <TransactionPersonName style={{ color: colorBase }}>
-                              {transaction.name}
-                            </TransactionPersonName>
-                            <TransactionAmount_Neg>
-                              ${transaction.amount}
-                            </TransactionAmount_Neg>
-                          </TransactionRow>
-                        );
-                      } else if (transaction.type === "GET") {
-                        return (
-                          <TransactionRow key={transaction.spitPersonID}>
-                            <ActionText>Receive from</ActionText>
-                            <TransactionPersonName style={{ color: colorBase }}>
-                              {transaction.name}
-                            </TransactionPersonName>
-                            <TransactionAmount_Pos>
-                              ${transaction.amount}
-                            </TransactionAmount_Pos>
-                          </TransactionRow>
-                        );
-                      }
-                    } else {
+                    if (transaction.type === "PAY") {
                       return (
-                        <TransactionRow key={transaction.splitPersonID}>
-                          <ActionText>No transactions need :)</ActionText>
+                        <TransactionRow key={transaction.spitPersonID}>
+                          <ActionText>Pay</ActionText>
+                          <TransactionPersonName style={{ color: colorBase }}>
+                            {transaction.name}
+                          </TransactionPersonName>
+                          <TransactionAmount_Neg>
+                            ${transaction.amount}
+                          </TransactionAmount_Neg>
+                        </TransactionRow>
+                      );
+                    } else if (transaction.type === "GET") {
+                      return (
+                        <TransactionRow key={transaction.spitPersonID}>
+                          <ActionText>Receive from</ActionText>
+                          <TransactionPersonName style={{ color: colorBase }}>
+                            {transaction.name}
+                          </TransactionPersonName>
+                          <TransactionAmount_Pos>
+                            ${transaction.amount}
+                          </TransactionAmount_Pos>
                         </TransactionRow>
                       );
                     }

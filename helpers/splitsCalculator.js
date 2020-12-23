@@ -1,5 +1,4 @@
 /** @format */
-import uuid from "react-uuid";
 //-------------------------------------------------------------------
 // Parameters: Participants List and Activities List
 // Output: Makes a splits object that will be read by the splits modal
@@ -8,8 +7,8 @@ import uuid from "react-uuid";
 //              name
 //              id
 //              EndingBalance
-//              Transactions: [{type: PAY/GET, name, amount}]
-//          }]
+//              Transactions: [{type: "PAY"/"GET", name, amount},]
+//          },]
 //
 export const makeSplits = (participantsList, activitiesList) => {
   var splits = [];
@@ -38,35 +37,41 @@ export const makeSplits = (participantsList, activitiesList) => {
     splits.push(person_splits);
   }
 
-  //---  Step 1: Calculate the pay, receive and total balance for each participant.
+  //---  Step 1: Calculate the pay, receive (get) and total balance for each participant.
 
   for (let i = 0; i < pList.length; i++) {
     for (let j = 0; j < aList.length; j++) {
+      var par = pList[i];
+      var act = aList[j];
       // check if person was payer
-      if (aList[j].payerID == pList[i].id) {
-        pList[i].receive += parseFloat(aList[j].cost);
+      if (act.payerID == par.id) {
+        par.receive += parseFloat(act.cost);
       }
       // check if participated
       var participated = false;
-      for (let k = 0; k < aList[j].pickerList.length; k++) {
-        if (aList[j].pickerList[k].id === pList[i].id) {
-          participated = true;
+      for (let k = 0; k < act.pickerList.length; k++) {
+        if (act.pickerList[k].id === par.id) {
+          if (act.pickerList[k].isParticipating === true) {
+            participated = true;
+          }
         }
       }
       if (participated === true) {
         // Figure out what the split would be from the picker list
         var numParticipating = 0;
-        for (let l = 0; l < aList[j].pickerList.length; l++) {
-          if (aList[j].pickerList[l].isParticipating === true) {
+        for (let l = 0; l < act.pickerList.length; l++) {
+          if (act.pickerList[l].isParticipating === true) {
             numParticipating += 1;
           }
         }
-        pList[i].pay += aList[j].cost / numParticipating;
+        par.pay += act.cost / numParticipating;
       }
     }
+  }
 
-    //--- Step 2: Build a Postive & Negative balance list -------
+  //--- Step 2: Build a Postive & Negative balance list -------
 
+  for (let i = 0; i < pList.length; i++) {
     pList[i].balance = pList[i].receive - pList[i].pay;
     pList[i].balance = Math.round(pList[i].balance * 100) / 100;
     var personObj = {
@@ -185,6 +190,16 @@ export const makeSplits = (participantsList, activitiesList) => {
   }
 
   //--- Step 4: Calculate ending balances for everyone
+  for (let i = 0; i < splits.length; i++) {
+    var spl = splits[i];
+    for (let j = 0; j < spl.transactions.length; j++) {
+      if (spl.transactions[j].type === "PAY") {
+        spl.endingBalance -= spl.transactions[j].amount;
+      } else if (spl.transactions[j].type === "GET") {
+        spl.endingBalance += spl.transactions[j].amount;
+      }
+    }
+  }
 
   return splits;
 };

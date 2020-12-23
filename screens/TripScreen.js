@@ -32,6 +32,7 @@ import {
   addActivity,
   getActivities,
   removeActivity,
+  updateActivities_peopleNames,
 } from "../store/activityStore";
 import {
   build_peopleList_newActivity,
@@ -232,9 +233,14 @@ const TripScreen = ({ navigation }) => {
       editPerson(trip.id, input_id, input_name).then(() => {
         getPeople(trip.id).then((newPeople) => {
           set_peopleList(newPeople);
-          // -------------------------------
-          // TODO -- Triger update activity
-          // -------------------------------
+          // Update activity with the new name of the person
+          updateActivities_peopleNames(trip.id, newPeople).then(
+            setTimeout(() => {
+              getActivities(trip.id).then((newActivities) => {
+                set_activitiesList(newActivities);
+              });
+            }, 100)
+          );
         });
       });
       Animated.timing(modal_editPerson_yPos, {

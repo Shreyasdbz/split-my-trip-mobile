@@ -144,3 +144,57 @@ export const getActivities = async (input_tripID) => {
     console.log("TS -- addAcitivty -- ERR[1]: ", err);
   }
 };
+
+// ------------------------------------------------------------------------
+// UPDATE ACTIVITIES
+// ------------------------------------------------------------------------
+export const updateActivities_peopleNames = async (
+  input_tripID,
+  peopleList
+) => {
+  try {
+    const ACTIVITY_KEY = "@activitiesList@" + input_tripID;
+    var currentList = await AsyncStorage.getItem(ACTIVITY_KEY);
+    if (currentList === null) {
+      return null;
+    } else {
+      currentList = JSON.parse(currentList);
+      // Update the payer's name
+      for (let i = 0; i < peopleList.length; i++) {
+        for (let j = 0; j < currentList.length; j++) {
+          var person = peopleList[i];
+          var act = currentList[j];
+          if (act.payerID === person.id) {
+            if (act.payerName !== person.name) {
+              act.payerName = person.name;
+            }
+          }
+        }
+      }
+      // Update pickerList names
+      for (let i = 0; i < currentList.length; i++) {
+        var act = currentList[i];
+        for (let j = 0; j < act.pickerList.length; j++) {
+          // cycle through each name in participant list for each name in pickerList
+          var per = act.pickerList[j];
+          for (let k = 0; k < peopleList.length; k++) {
+            var par = peopleList[k];
+            if (par.id === per.id) {
+              per.name = par.name;
+              per.value = par.id;
+              per.label = par.name;
+            }
+          }
+        }
+      }
+
+      // Pack up the data
+      const sendValue = JSON.stringify(currentList);
+      return await AsyncStorage.setItem(ACTIVITY_KEY, sendValue);
+    }
+  } catch (err) {
+    console.log("AS - updateActivities - ERR: ", err);
+  }
+
+  //
+};
