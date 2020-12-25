@@ -14,7 +14,7 @@ const Modal_EditActivity = ({
 }) => {
   const [title, set_title] = useState(currentActivity.name);
   const [cost, set_cost] = useState(currentActivity.cost);
-  const [payerID, set_payerID] = useState(null);
+  const [payerID, set_payerID] = useState(currentActivity.payerID);
   const [pickerList, set_pickerList] = useState(input_pickerList);
 
   const name_error_height = useRef(new Animated.Value(0)).current;
@@ -29,7 +29,6 @@ const Modal_EditActivity = ({
     if (pickerList.length > 5) {
       openLength = 150;
     }
-
     if (action === "open") {
       Keyboard.dismiss();
       Animated.timing(payerPickPadding, {
@@ -47,7 +46,6 @@ const Modal_EditActivity = ({
     }
     if (action === "pick") {
       set_payerID((crr) => item.value);
-
       Animated.timing(payerPickPadding, {
         toValue: 0,
         duration: 200,
@@ -68,34 +66,21 @@ const Modal_EditActivity = ({
   };
 
   const handleSave = () => {
-    if (payerID === null) {
-      var tempPayerID = "";
-      tempPayerID = pickerList[pickerList.length - 1].value;
-      var tempPayerName = pickerList[pickerList.length - 1].name;
-      handleEditActivityModal(
-        "SAVE",
-        title,
-        cost,
-        tempPayerID,
-        tempPayerName,
-        pickerList
-      );
-    } else {
-      var payerName = "";
-      for (let i = 0; i < pickerList.length; i++) {
-        if (pickerList[i].id === payerID) {
-          payerName = pickerList[i].name;
-        }
+    var payerName = "";
+    for (let i = 0; i < pickerList.length; i++) {
+      if (pickerList[i].id === payerID) {
+        payerName = pickerList[i].name;
       }
-      handleEditActivityModal(
-        "SAVE",
-        title,
-        cost,
-        payerID,
-        payerName,
-        pickerList
-      );
     }
+    handleEditActivityModal(
+      "SAVE",
+      currentActivity.id,
+      title,
+      cost,
+      payerID,
+      payerName,
+      pickerList
+    );
   };
 
   useEffect(
@@ -169,7 +154,7 @@ const Modal_EditActivity = ({
               }}
               dropDownStyle={{ backgroundColor: "white" }}
               // placeholder="Select who paid"
-              defaultValue={currentActivity.payerID}
+              defaultValue={payerID}
               onChangeItem={(item) => handlePickerPadding("pick", item)}
               onOpen={() => handlePickerPadding("open")}
               onClose={() => handlePickerPadding("close")}
@@ -212,6 +197,16 @@ const Modal_EditActivity = ({
           <TouchableOpacity onPress={handleSave}>
             <BtnView>
               <BtnText>Save</BtnText>
+            </BtnView>
+          </TouchableOpacity>
+          <DividerBar />
+          <TouchableOpacity
+            onPress={() =>
+              handleEditActivityModal("DELETE", currentActivity.id)
+            }
+          >
+            <BtnView>
+              <BtnText_Delete>Delete</BtnText_Delete>
             </BtnView>
           </TouchableOpacity>
         </ButtonsView>
@@ -341,6 +336,11 @@ const BtnView = styled.View`
 const BtnText = styled.Text`
   font-size: 18px;
   font-weight: 600;
+`;
+const BtnText_Delete = styled.Text`
+  font-size: 18px;
+  font-weight: 600;
+  color: red;
 `;
 
 const DividerBar = styled.View`

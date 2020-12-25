@@ -3,9 +3,6 @@
 import AsyncStorage from "@react-native-community/async-storage";
 import uuid from "react-uuid";
 
-import { remove_person_action } from "../helpers/updateActivityStore";
-import { editActivity, removeActivity } from "../store/activityStore";
-
 // ------------------------------------------------------------------------
 // ADD NEW PERSON
 // ------------------------------------------------------------------------
@@ -95,7 +92,6 @@ export const editPerson = async (
 // ------------------------------------------------------------------------
 export const removePerson = async (input_tripID, input_personID) => {
   const PEOPLE_KEY = "@people_list@" + input_tripID;
-  const ACTIVITY_KEY = "@activitiesList@" + input_tripID;
   try {
     var currentList = await AsyncStorage.getItem(PEOPLE_KEY);
     if (currentList === null) {
@@ -108,34 +104,6 @@ export const removePerson = async (input_tripID, input_personID) => {
           newList.push(currentList[i]);
         }
       }
-      // -----------------------------
-      var activitiesList = await AsyncStorage.getItem(ACTIVITY_KEY);
-      if (activitiesList === null) {
-        // No action
-      } else {
-        activitiesList = JSON.parse(activitiesList);
-        for (let a = 0; a < activitiesList.length; a++) {
-          // Go through payers & delete if found
-          if (activitiesList[a].payerID === input_personID) {
-            removeActivity(input_tripID, activitiesList[a].id).then(
-              (update) => {
-                // console.log("Removed activity");
-              }
-            );
-          }
-          // Go through participants and delete participant if found
-          var crrPickerList = activitiesList[a].pickerList;
-          var newPickerList = [];
-          for (let p = 0; p < crrPickerList.length; p++) {
-            if (crrPickerList[p].id !== input_personID) {
-              newPickerList.push(crrPickerList[p]);
-            }
-          }
-          activitiesList[a].pickerList = newPickerList;
-          //   TODO: Edit activity
-        }
-      }
-      // -----------------------------
       // If list is empty, return nulll
       if (newList.length === 0) {
         return await AsyncStorage.removeItem(PEOPLE_KEY);

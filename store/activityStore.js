@@ -65,8 +65,9 @@ export const editActivity = async (
   input_activityID,
   input_activityName,
   input_activityCost,
-  input_activityPayer,
-  input_activityParticipants
+  input_activityPayerID,
+  input_activityPayerName,
+  input_activityPickerList
 ) => {
   const ACTIVITY_KEY = "@activitiesList@" + input_tripID;
 
@@ -82,8 +83,9 @@ export const editActivity = async (
         if (currentList[i].id === input_activityID) {
           currentList[i].name = input_activityName;
           currentList[i].cost = input_activityCost;
-          currentList[i].payer = input_activityPayer;
-          currentList[i].participants = input_activityParticipants;
+          currentList[i].payerID = input_activityPayerID;
+          currentList[i].payerName = input_activityPayerName;
+          currentList[i].pickerList = input_activityPickerList;
         }
       }
       const sendValue = JSON.stringify(currentList);
@@ -146,7 +148,7 @@ export const getActivities = async (input_tripID) => {
 };
 
 // ------------------------------------------------------------------------
-// UPDATE ACTIVITIES
+// UPDATE ACTIVITIES -- PEOPLE NAMES
 // ------------------------------------------------------------------------
 export const updateActivities_peopleNames = async (
   input_tripID,
@@ -193,7 +195,26 @@ export const updateActivities_peopleNames = async (
       return await AsyncStorage.setItem(ACTIVITY_KEY, sendValue);
     }
   } catch (err) {
-    console.log("AS - updateActivities - ERR: ", err);
+    console.log("AS - updateActivities_newPeople - ERR: ", err);
+  }
+
+  //
+};
+
+// ------------------------------------------------------------------------
+// UPDATE ACTIVITIES -- FULL LIST
+// ------------------------------------------------------------------------
+export const updateActivities_fullList = async (
+  input_tripID,
+  newActivities
+) => {
+  try {
+    const ACTIVITY_KEY = "@activitiesList@" + input_tripID;
+    const sendData = JSON.stringify(newActivities);
+
+    return await AsyncStorage.setItem(ACTIVITY_KEY, sendData);
+  } catch (err) {
+    console.log("AS - updateActivities_fullList - ERR: ", err);
   }
 
   //

@@ -1,5 +1,21 @@
 /** @format */
 
+import AsyncStorage from "@react-native-community/async-storage";
+
+import { getActivities } from "../store/activityStore";
+
+function alreadyExists(inputID, pickerList) {
+  var exists = false;
+  for (let i = 0; i < pickerList.length; i++) {
+    if (inputID === pickerList[i].id) {
+      exists = true;
+    }
+  }
+  return exists;
+}
+
+//
+// Build a picker list for an activity
 export const build_peopleList_newActivity = (peopleList) => {
   var list = [];
   for (var i = 0; i < peopleList.length; i++) {
@@ -16,16 +32,8 @@ export const build_peopleList_newActivity = (peopleList) => {
   return list;
 };
 
-function alreadyExists(inputID, pickerList) {
-  var exists = false;
-  for (let i = 0; i < pickerList.length; i++) {
-    if (inputID === pickerList[i].id) {
-      exists = true;
-    }
-  }
-  return exists;
-}
-
+//
+// Combine new people and add them to the picker list of an existing activity
 export const build_peopleList_editActivity = (
   current_peopleList,
   activity_pickerList
@@ -50,12 +58,57 @@ export const build_peopleList_editActivity = (
         name: current_peopleList[i].name,
         value: current_peopleList[i].id,
         label: current_peopleList[i].name,
-        isParticipating: true,
+        isParticipating: false,
       };
       activity_pickerList.push(item);
     }
   }
+
   return activity_pickerList;
 };
 
-export const build_participantList_from_pickerList = (tripID, pickerList) => {};
+//
+// After a person is deleted, delete any activity they paid for / participated in
+export const build_activitiesList_removePerson = async (
+  input_tripID,
+  input_personID
+) => {
+  const ACTIVITY_KEY = "@activitiesList@" + input_tripID;
+  try {
+    var activitiesList = await AsyncStorage.getItem(ACTIVITY_KEY);
+    if (activitiesList === null) {
+      return null;
+    } else {
+      activitiesList = JSON.parse(activitiesList);
+      var tempList = [];
+      // Remove activities with  input_personID == payerID
+      for (let i = 0; i < activitiesList.length; i++) {
+        var act = activitiesList[i];
+        if (act.payerID !== input_personID) {
+          tempList.push(act);
+          //
+        }
+      }
+      activitiesList = tempList;
+      // Go through and edit activities to remove person from pickerList
+      for (let i = 0; i < activitiesList.length; i++) {
+        var tempPickerList = [];
+        if (activitiesList[i].pickerList.length == 0) {
+          //
+        } else {
+          for (let j = 0; j < activitiesList[i].pickerList.length; j++) {
+            if (activitiesList[i].pickerList[j].id !== input_personID) {
+              tempPickerList.push(activitiesList[i].pickerList[j]);
+            }
+          }
+          activitiesList[i].pickerList = tempPickerList;
+        }
+      }
+
+      return activitiesList;
+    }
+  } catch (err) {
+    console.log("List Processors -- buildActL_rmPer -- ERR: ", err);
+  }
+  return activitiesList;
+};

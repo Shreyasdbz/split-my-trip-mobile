@@ -31,12 +31,15 @@ import {
 import {
   addActivity,
   getActivities,
+  editActivity,
   removeActivity,
   updateActivities_peopleNames,
+  updateActivities_fullList,
 } from "../store/activityStore";
 import {
   build_peopleList_newActivity,
   build_peopleList_editActivity,
+  build_activitiesList_removePerson,
 } from "../helpers/listProcessors";
 import { makeSplits } from "../helpers/splitsCalculator";
 
@@ -254,18 +257,6 @@ const TripScreen = ({ navigation }) => {
       }, 500);
       //
     } else if (action === "DELETE") {
-      // Delete from store
-      removePerson(trip.id, input_id).then((update) => {
-        getPeople(trip.id).then((newPeople) => {
-          set_peopleList(newPeople);
-          getActivities(trip.id).then((newActivities) => {
-            set_activitiesList(newActivities);
-            // -------------------------------
-            // TODO -- Triger update activity
-            // -------------------------------
-          });
-        });
-      });
       Animated.timing(modal_editPerson_yPos, {
         toValue: 3000,
         duration: 200,
@@ -275,6 +266,21 @@ const TripScreen = ({ navigation }) => {
       setTimeout(() => {
         set_editPersonModal_active((crr) => false);
       }, 500);
+      // Delete from store
+      removePerson(trip.id, input_id).then((update) => {
+        getPeople(trip.id).then((newPeople) => {
+          set_peopleList(newPeople);
+        });
+      });
+      build_activitiesList_removePerson(trip.id, input_id).then(
+        (newActivities) => {
+          updateActivities_fullList(trip.id, newActivities).then((update) => {
+            getActivities(trip.id).then((updatedActivities) => {
+              set_activitiesList((crr) => updatedActivities);
+            });
+          });
+        }
+      );
       //
     }
   };
@@ -326,8 +332,8 @@ const TripScreen = ({ navigation }) => {
         input_payerName,
         input_pickerList
       ).then((update) => {
-        getActivities(trip.id).then((newTrips) => {
-          set_activitiesList((crr) => newTrips);
+        getActivities(trip.id).then((newActivities) => {
+          set_activitiesList((crr) => newActivities);
         });
       });
       Animated.timing(modal_addActivity_yPos, {
@@ -387,13 +393,52 @@ const TripScreen = ({ navigation }) => {
       setTimeout(() => {
         set_editActivityModal_active((crr) => false);
         set_currentEditActivity((crr) => null);
+        set_peopleList_editActivity((crr) => null);
       }, 500);
     } else if (action === "DELETE") {
       // delete
+      removeActivity(trip.id, currentEditActivity.id).then((update) => {
+        getActivities(trip.id).then((newActivities) => {
+          set_activitiesList((crr) => newActivities);
+        });
+      });
+      Animated.timing(modal_editActivity_yPos, {
+        toValue: 3000,
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+      animateTripScreen("CLOSE");
+      setTimeout(() => {
+        set_editActivityModal_active((crr) => false);
+        set_currentEditActivity((crr) => null);
+        set_peopleList_editActivity((crr) => null);
+      }, 500);
       // --
     } else if (action === "SAVE") {
       // save
-      // --
+      editActivity(
+        trip.id,
+        activityID,
+        input_name,
+        input_cost,
+        input_payerID,
+        input_payerName,
+        input_pickerList
+      ).then((update) => {
+        getActivities(trip.id).then((newActivities) => {
+          set_activitiesList((crr) => newActivities);
+        });
+      });
+      Animated.timing(modal_editActivity_yPos, {
+        toValue: 3000,
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+      animateTripScreen("CLOSE");
+      setTimeout(() => {
+        set_editActivityModal_active((crr) => false);
+      }, 500);
+      //
     }
   };
 
@@ -650,7 +695,6 @@ const TripScreen = ({ navigation }) => {
                           name={act[1].name}
                           cost={act[1].cost}
                           payerName={act[1].payerName}
-                          // payerName={"PayerName"}
                           pickerList={act[1].pickerList}
                           colorBase={colorBase}
                           colorSecondary={colorSecondary}
