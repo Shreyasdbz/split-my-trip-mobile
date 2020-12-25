@@ -1,16 +1,15 @@
 /** @format */
 
 import AsyncStorage from "@react-native-community/async-storage";
-import uuid from "react-uuid";
 
 const USER_KEY = "@user_";
 
 // USER Object:
-// ID
-// Name
-// Email
-// Photo
-//
+// id
+// name
+// email
+// photoSrc
+// loginType
 
 // ------------------------------------------------------------------------
 // Store User

@@ -98,7 +98,7 @@ const TitleView = styled.View`
 `;
 
 const TitleText = styled.Text`
-  font-size: 32px;
+  font-size: 34px;
   font-weight: 800;
   color: white;
   text-transform: uppercase;

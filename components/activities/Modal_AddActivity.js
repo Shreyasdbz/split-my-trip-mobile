@@ -67,33 +67,64 @@ const Modal_AddActivity = ({
   };
 
   const handleSave = () => {
-    if (payerID === null) {
-      var tempPayerID = "";
-      tempPayerID = pickerList[pickerList.length - 1].value;
-      var tempPayerName = pickerList[pickerList.length - 1].name;
-      handleAddActivityModal(
-        "SAVE",
-        title,
-        cost,
-        tempPayerID,
-        tempPayerName,
-        pickerList
-      );
+    // bad title
+    if (title === "" || title === null) {
+      Animated.timing(name_error_height, {
+        toValue: 20,
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+      setTimeout(() => {
+        Animated.timing(name_error_height, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: false,
+        }).start();
+      }, 3000);
+    }
+    // bad cost
+    else if (cost === "" || cost === null || cost === 0) {
+      Animated.timing(cost_error_height, {
+        toValue: 20,
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+      setTimeout(() => {
+        Animated.timing(cost_error_height, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: false,
+        }).start();
+      }, 3000);
     } else {
-      var payerName = "";
-      for (let i = 0; i < pickerList.length; i++) {
-        if (pickerList[i].id === payerID) {
-          payerName = pickerList[i].name;
+      if (payerID === null) {
+        var tempPayerID = "";
+        tempPayerID = pickerList[pickerList.length - 1].value;
+        var tempPayerName = pickerList[pickerList.length - 1].name;
+        handleAddActivityModal(
+          "SAVE",
+          title,
+          cost,
+          tempPayerID,
+          tempPayerName,
+          pickerList
+        );
+      } else {
+        var payerName = "";
+        for (let i = 0; i < pickerList.length; i++) {
+          if (pickerList[i].id === payerID) {
+            payerName = pickerList[i].name;
+          }
         }
+        handleAddActivityModal(
+          "SAVE",
+          title,
+          cost,
+          payerID,
+          payerName,
+          pickerList
+        );
       }
-      handleAddActivityModal(
-        "SAVE",
-        title,
-        cost,
-        payerID,
-        payerName,
-        pickerList
-      );
     }
   };
 

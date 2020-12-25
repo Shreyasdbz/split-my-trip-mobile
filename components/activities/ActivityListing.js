@@ -127,7 +127,7 @@ const CostTextWrapper = styled.View`
 
 const CostText = styled.Text`
   font-weight: 700;
-  font-size: 18px;
+  font-size: 20px;
 `;
 
 const MidRow_Divider_View = styled.View`
@@ -152,14 +152,14 @@ const BottomRow = styled.View`
 `;
 
 const PayerLabelText = styled.Text`
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
   color: black;
   opacity: 0.5;
 `;
 
 const PayerNameText = styled.Text`
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
   color: black;
   opacity: 0.75;

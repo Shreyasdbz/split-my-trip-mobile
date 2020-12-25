@@ -22,8 +22,7 @@
           "reservedClientId": "com.googleusercontent.apps.945902506805-nrlatrg80k38iqm8ppt446sf1qgq1ksb"
         }
       },
-      "googleServicesFile": "./GoogleService-Info.plist",
-      "rerequireFullScreen": true
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {

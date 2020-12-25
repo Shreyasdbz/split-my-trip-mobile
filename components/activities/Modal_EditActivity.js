@@ -66,21 +66,52 @@ const Modal_EditActivity = ({
   };
 
   const handleSave = () => {
-    var payerName = "";
-    for (let i = 0; i < pickerList.length; i++) {
-      if (pickerList[i].id === payerID) {
-        payerName = pickerList[i].name;
-      }
+    // bad name
+    if (title === "" || title === null) {
+      Animated.timing(name_error_height, {
+        toValue: 20,
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+      setTimeout(() => {
+        Animated.timing(name_error_height, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: false,
+        }).start();
+      }, 3000);
     }
-    handleEditActivityModal(
-      "SAVE",
-      currentActivity.id,
-      title,
-      cost,
-      payerID,
-      payerName,
-      pickerList
-    );
+    // bad cost
+    else if (cost === "" || cost === null || cost === 0) {
+      Animated.timing(cost_error_height, {
+        toValue: 20,
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+      setTimeout(() => {
+        Animated.timing(cost_error_height, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: false,
+        }).start();
+      }, 3000);
+    } else {
+      var payerName = "";
+      for (let i = 0; i < pickerList.length; i++) {
+        if (pickerList[i].id === payerID) {
+          payerName = pickerList[i].name;
+        }
+      }
+      handleEditActivityModal(
+        "SAVE",
+        currentActivity.id,
+        title,
+        cost,
+        payerID,
+        payerName,
+        pickerList
+      );
+    }
   };
 
   useEffect(
