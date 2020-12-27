@@ -171,10 +171,10 @@ const HomeScreen = ({ navigation }) => {
       // Setup user
       getUserInfo().then((newInfo) => {
         set_userInfo((crr) => newInfo);
-      });
-      // Setup trips
-      getTrips().then((newTrips) => {
-        set_tripsList((crr) => newTrips);
+        // Setup trips
+        getTrips().then((newTrips) => {
+          set_tripsList((crr) => newTrips);
+        });
       });
     },
     [],

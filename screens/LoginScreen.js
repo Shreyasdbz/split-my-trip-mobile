@@ -10,10 +10,13 @@ import * as Google from "expo-google-app-auth";
 import { firebaseConfig } from "../config/Firebase";
 
 import { deleteAllData } from "../store/loginStore";
+import { initializeFirestore, checkUserDB } from "../store/cloudStore";
 
 const windowHeight = Dimensions.get("window").height;
 
 const LoginScreen = ({ handleLogIn }) => {
+  initializeFirestore();
+
   const handleGoogleLogin = async () => {
     try {
       const { type, accessToken, user } = await Google.logInAsync(
@@ -34,7 +37,9 @@ const LoginScreen = ({ handleLogIn }) => {
           photoSrc: user.photoUrl,
           loginType: "GOOGLE",
         };
-        handleLogIn(googleUser);
+        // Setup user in firestore db
+        // Setup user for Async:
+        handleLogIn(checkUserDB(googleUser));
       } else {
         // handleOfflineLogin();
         alert("Could not log in with Google");

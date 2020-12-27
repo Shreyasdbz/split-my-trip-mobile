@@ -36,6 +36,7 @@ import {
   updateActivities_peopleNames,
   updateActivities_fullList,
 } from "../store/activityStore";
+import { packUpAndSend } from "../store/cloudStore";
 import {
   build_peopleList_newActivity,
   build_peopleList_editActivity,
@@ -463,7 +464,12 @@ const TripScreen = ({ navigation }) => {
         duration: 300,
         useNativeDriver: false,
       }).start();
-      // animateTripScreen("OPEN");
+      // --------------------------
+      // Update the db with changes
+      // --------------------------
+      packUpAndSend().then((update) => {
+        console.log("Data uploaded to cloud!");
+      });
       //
     } else if (action === "CLOSE") {
       Animated.timing(modal_splits_yPos, {
@@ -471,7 +477,6 @@ const TripScreen = ({ navigation }) => {
         duration: 300,
         useNativeDriver: false,
       }).start();
-      // animateTripScreen("CLOSE");
       setTimeout(() => {
         set_splitsModal_active((crr) => false);
       }, 500);

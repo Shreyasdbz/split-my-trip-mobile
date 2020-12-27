@@ -14,7 +14,7 @@ const USER_KEY = "@user_";
 // ------------------------------------------------------------------------
 // Store User
 // @[userID]: generated using uuid
-// @[loginType]: "google" or "apple" or "offline"
+// @[loginType]: "GOOGLE" or "APPLE" or "OFFLINE"
 // ------------------------------------------------------------------------
 export const storeUser = async (user) => {
   var sendObj = JSON.stringify(user);
