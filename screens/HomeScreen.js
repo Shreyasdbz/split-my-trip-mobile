@@ -15,8 +15,14 @@ import TripListing from "../components/trips/TripListing";
 import Modal_NewTrip from "../components/trips/Modal_NewTrip";
 import Modal_DeleteTrips from "../components/trips/Modal_DeleteTrips";
 
-import { storeUser, getUserInfo, logoutUser } from "../store/loginStore";
+import {
+  storeUser,
+  getUserInfo,
+  logoutUser,
+  deleteAllData,
+} from "../store/loginStore";
 import { getTrips, addTrip, removeTrips } from "../store/tripStore";
+import { unpackFirestore } from "../store/cloudStore";
 import { getColorBase, getColorSecondary } from "../store/colorStore";
 
 const HomeScreen = ({ navigation }) => {
@@ -72,6 +78,9 @@ const HomeScreen = ({ navigation }) => {
         logoutUser().then((update) => {
           getUserInfo().then((newInfo) => {
             set_userInfo((crr) => newInfo);
+            deleteAllData().then((update) => {
+              //
+            });
           });
         });
       }, 500);
@@ -152,6 +161,7 @@ const HomeScreen = ({ navigation }) => {
   const handleLogIn = (userInfo) => {
     storeUser(userInfo).then((update) => {
       getUserInfo().then((newInfo) => {
+        unpackFirestore(newInfo.id);
         set_userInfo((crr) => newInfo);
       });
     });

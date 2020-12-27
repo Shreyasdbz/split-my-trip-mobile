@@ -141,3 +141,19 @@ export const getPersonName = async (input_tripID, input_personID) => {
     console.log("PS - getPersonName - ERR[1]: ", err);
   }
 };
+
+// ------------------------------------------------------------------------
+// SET FULL LIST
+// ------------------------------------------------------------------------
+export const setPeopleStore = async (input_tripID, input_peopleStore) => {
+  const PEOPLE_KEY = "@people_list@" + input_tripID;
+  try {
+    //
+    return await AsyncStorage.setItem(
+      PEOPLE_KEY,
+      JSON.stringify(input_peopleStore)
+    );
+  } catch (err) {
+    console.log("SET PEOPLE STORE ERR: ", err);
+  }
+};

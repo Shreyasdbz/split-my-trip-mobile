@@ -4,6 +4,9 @@ import "firebase/firestore";
 import AsyncStorage from "@react-native-community/async-storage";
 
 import { getUserInfo } from "./loginStore";
+import { setTripStore } from "./tripStore";
+import { setPeopleStore } from "./peopleStore";
+import { setActivityStore } from "./activityStore";
 
 var firebaseConfig = {
   apiKey: "AIzaSyAi_Uixv3JUeBLI0uC9gcspuPfvGNUJwsY",
@@ -44,25 +47,58 @@ export const checkUserDB = (user) => {
         });
       } else {
         // Existing User --- Update DB
-        firebase.firestore().collection("users").doc(user.id).set({
-          name: user.name,
-          email: user.email,
-          photoSrc: user.photoSrc,
-          loginType: user.loginType,
-        });
+        firebase.firestore().collection("users").doc(user.id).set(
+          {
+            name: user.name,
+            email: user.email,
+            photoSrc: user.photoSrc,
+            loginType: user.loginType,
+          },
+          { merge: true }
+        );
       }
     });
   } catch (err) {
-    alert("LOGIN DATABASE ERROR");
+    alert("LOGIN DATABASE ERROR: ", err);
   }
 
   return user;
 };
 
 // ------------------------------------------------------------------------
+// Unpack data from firestore
+// ------------------------------------------------------------------------
+export const unpackFirestore = async (userID) => {
+  var userRef = firebase.firestore().collection("users").doc(userID);
+  try {
+    var getUser = userRef.get().then((doc) => {
+      const data = JSON.parse(doc.data().tripData);
+      const tripsList = [];
+      for (let i = 0; i < data.length; i++) {
+        //
+        tripsList.push(data[i].trip);
+        setPeopleStore(data[i].trip.id, data[i].peopleList).then((update) => {
+          //
+        });
+        setActivityStore(data[i].trip.id, data[i].activitiesList).then(
+          (update) => {
+            //
+          }
+        );
+      }
+      setTripStore(tripsList).then((update) => {
+        //
+      });
+    });
+  } catch (err) {
+    console.log("UNPACK DATABASE ERROR: ", err);
+  }
+};
+
+// ------------------------------------------------------------------------
 // Packup and send data to firestore
 // ------------------------------------------------------------------------
-export const packUpAndSend = async () => {
+export const packFirestore = async () => {
   const TRIPS_KEY = "@trips_list";
 
   var sendList = [];

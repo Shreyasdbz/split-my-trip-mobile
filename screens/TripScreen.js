@@ -15,18 +15,13 @@ import Modal_AddActivity from "../components/activities/Modal_AddActivity";
 import Modal_EditActivity from "../components/activities/Modal_EditActivity";
 import Modal_Splits from "../components/split/Modal_Splits";
 
-import {
-  getColorByID,
-  getColorBase,
-  getColorSecondary,
-} from "../store/colorStore";
+import { getColorBase, getColorSecondary } from "../store/colorStore";
 import { editTrip, removeTrip } from "../store/tripStore";
 import {
   getPeople,
   addPerson,
   editPerson,
   removePerson,
-  getPersonName,
 } from "../store/peopleStore";
 import {
   addActivity,
@@ -36,7 +31,7 @@ import {
   updateActivities_peopleNames,
   updateActivities_fullList,
 } from "../store/activityStore";
-import { packUpAndSend } from "../store/cloudStore";
+import { packFirestore } from "../store/cloudStore";
 import {
   build_peopleList_newActivity,
   build_peopleList_editActivity,
@@ -139,13 +134,23 @@ const TripScreen = ({ navigation }) => {
       animateTripScreen("CLOSE");
       setTimeout(() => {
         navigation.navigate("Home");
-        removeTrip(trip.id);
+        removeTrip(trip.id).then((update) => {
+          packFirestore().then((update) => {
+            console.log("Data uploaded to cloud!");
+          });
+        });
         set_editTripModal_active((crr) => false);
       }, 500);
       //----------
     } else if (action === "SAVE") {
       // Save Stuff in
-      editTrip(trip.id, input_title, input_date, input_colorID);
+      editTrip(trip.id, input_title, input_date, input_colorID).then(
+        (update) => {
+          packFirestore().then((update) => {
+            console.log("Data uploaded to cloud!");
+          });
+        }
+      );
       // Change current stuff
       set_title((crr) => input_title);
       set_date((crr) => input_date);
@@ -193,6 +198,9 @@ const TripScreen = ({ navigation }) => {
       addPerson(trip.id, input_name).then((update) => {
         getPeople(trip.id).then((newPeople) => {
           set_peopleList((crr) => newPeople);
+          packFirestore().then((update) => {
+            console.log("Data uploaded to cloud!");
+          });
         });
       });
       Animated.timing(modal_addPerson_yPos, {
@@ -242,6 +250,9 @@ const TripScreen = ({ navigation }) => {
             setTimeout(() => {
               getActivities(trip.id).then((newActivities) => {
                 set_activitiesList(newActivities);
+                packFirestore().then((update) => {
+                  console.log("Data uploaded to cloud!");
+                });
               });
             }, 100)
           );
@@ -277,6 +288,9 @@ const TripScreen = ({ navigation }) => {
         (newActivities) => {
           updateActivities_fullList(trip.id, newActivities).then((update) => {
             getActivities(trip.id).then((updatedActivities) => {
+              packFirestore().then((update) => {
+                console.log("Data uploaded to cloud!");
+              });
               set_activitiesList((crr) => updatedActivities);
             });
           });
@@ -335,6 +349,9 @@ const TripScreen = ({ navigation }) => {
       ).then((update) => {
         getActivities(trip.id).then((newActivities) => {
           set_activitiesList((crr) => newActivities);
+          packFirestore().then((update) => {
+            console.log("Data uploaded to cloud!");
+          });
         });
       });
       Animated.timing(modal_addActivity_yPos, {
@@ -401,6 +418,9 @@ const TripScreen = ({ navigation }) => {
       removeActivity(trip.id, currentEditActivity.id).then((update) => {
         getActivities(trip.id).then((newActivities) => {
           set_activitiesList((crr) => newActivities);
+          packFirestore().then((update) => {
+            console.log("Data uploaded to cloud!");
+          });
         });
       });
       Animated.timing(modal_editActivity_yPos, {
@@ -428,6 +448,9 @@ const TripScreen = ({ navigation }) => {
       ).then((update) => {
         getActivities(trip.id).then((newActivities) => {
           set_activitiesList((crr) => newActivities);
+          packFirestore().then((update) => {
+            console.log("Data uploaded to cloud!");
+          });
         });
       });
       Animated.timing(modal_editActivity_yPos, {
@@ -464,12 +487,6 @@ const TripScreen = ({ navigation }) => {
         duration: 300,
         useNativeDriver: false,
       }).start();
-      // --------------------------
-      // Update the db with changes
-      // --------------------------
-      packUpAndSend().then((update) => {
-        console.log("Data uploaded to cloud!");
-      });
       //
     } else if (action === "CLOSE") {
       Animated.timing(modal_splits_yPos, {

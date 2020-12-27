@@ -150,6 +150,21 @@ export const removeTrips = async () => {
 };
 
 // ------------------------------------------------------------------------
+// SET FULL LIST
+// ------------------------------------------------------------------------
+export const setTripStore = async (input_tripStore) => {
+  try {
+    //
+    return await AsyncStorage.setItem(
+      TRIPS_KEY,
+      JSON.stringify(input_tripStore)
+    );
+  } catch (err) {
+    console.log("SET TRIP STORE ERR: ", err);
+  }
+};
+
+// ------------------------------------------------------------------------
 // Get a formatted date to add to the new Trip
 // ------------------------------------------------------------------------
 function getFormattedDate() {

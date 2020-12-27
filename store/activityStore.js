@@ -219,3 +219,19 @@ export const updateActivities_fullList = async (
 
   //
 };
+
+// ------------------------------------------------------------------------
+// SET FULL LIST
+// ------------------------------------------------------------------------
+export const setActivityStore = async (input_tripID, input_activityStore) => {
+  const ACTIVITY_KEY = "@activitiesList@" + input_tripID;
+  try {
+    //
+    return await AsyncStorage.setItem(
+      ACTIVITY_KEY,
+      JSON.stringify(input_activityStore)
+    );
+  } catch (err) {
+    console.log("SET ACTIVITY STORE ERR: ", err);
+  }
+};
