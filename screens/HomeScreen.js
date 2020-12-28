@@ -6,7 +6,6 @@ import { TouchableOpacity, ScrollView } from "react-native-gesture-handler";
 import { StatusBar } from "expo-status-bar";
 import { Animated, Keyboard } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { withNavigationFocus } from "react-navigation";
 
 import LoginScreen from "./LoginScreen";
 import HomeScreenHeader from "../components/misc/HomeScreenHeader";
@@ -22,7 +21,7 @@ import {
   deleteAllData,
 } from "../store/loginStore";
 import { getTrips, addTrip, removeTrips } from "../store/tripStore";
-import { unpackFirestore } from "../store/cloudStore";
+import { packFirestore, unpackFirestore } from "../store/cloudStore";
 import { getColorBase, getColorSecondary } from "../store/colorStore";
 
 const HomeScreen = ({ navigation }) => {
@@ -114,6 +113,9 @@ const HomeScreen = ({ navigation }) => {
         getTrips().then((newTrips) => {
           set_tripsList((crr) => newTrips);
         });
+        packFirestore().then((cloudUpload) => {
+          // console.log("Data uploaded to cloud")
+        });
       });
       Animated.timing(modal_newTrip_yPos, {
         toValue: 3000,
@@ -148,6 +150,9 @@ const HomeScreen = ({ navigation }) => {
       // delete all trips
       removeTrips().then((update) => {
         set_tripsList((crr) => null);
+        packFirestore().then((cloudUpload) => {
+          // console.log("Data uploaded to cloud")
+        });
       });
       Animated.timing(modal_deleteTrips_yPos, {
         toValue: 3000,
@@ -181,6 +186,7 @@ const HomeScreen = ({ navigation }) => {
       // Setup user
       getUserInfo().then((newInfo) => {
         set_userInfo((crr) => newInfo);
+        unpackFirestore(newInfo.id);
         // Setup trips
         getTrips().then((newTrips) => {
           set_tripsList((crr) => newTrips);

@@ -2,6 +2,7 @@
 import * as firebase from "firebase";
 import "firebase/firestore";
 import AsyncStorage from "@react-native-community/async-storage";
+import NetInfo from "@react-native-community/netinfo";
 
 import { getUserInfo } from "./loginStore";
 import { setTripStore } from "./tripStore";
@@ -69,34 +70,58 @@ export const checkUserDB = (user) => {
 // Unpack data from firestore
 // ------------------------------------------------------------------------
 export const unpackFirestore = async (userID) => {
-  var userRef = firebase.firestore().collection("users").doc(userID);
-  try {
-    var getUser = userRef.get().then((doc) => {
-      const data = JSON.parse(doc.data().tripData);
-      const tripsList = [];
-      for (let i = 0; i < data.length; i++) {
-        //
-        tripsList.push(data[i].trip);
-        setPeopleStore(data[i].trip.id, data[i].peopleList).then((update) => {
-          //
-        });
-        setActivityStore(data[i].trip.id, data[i].activitiesList).then(
-          (update) => {
+  NetInfo.fetch().then((connection) => {
+    if (connection.isConnected) {
+      // Online -- fetch data
+      var userRef = firebase.firestore().collection("users").doc(userID);
+      try {
+        var getUser = userRef.get().then((doc) => {
+          const data = JSON.parse(doc.data().tripData);
+          const tripsList = [];
+          for (let i = 0; i < data.length; i++) {
             //
+            tripsList.push(data[i].trip);
+            setPeopleStore(data[i].trip.id, data[i].peopleList).then(
+              (update) => {
+                //
+              }
+            );
+            setActivityStore(data[i].trip.id, data[i].activitiesList).then(
+              (update) => {
+                //
+              }
+            );
           }
-        );
+          setTripStore(tripsList).then((update) => {
+            //
+          });
+        });
+      } catch (err) {
+        console.log("UNPACK DATABASE ERROR: ", err);
       }
-      setTripStore(tripsList).then((update) => {
-        //
-      });
-    });
-  } catch (err) {
-    console.log("UNPACK DATABASE ERROR: ", err);
-  }
+    } else {
+      // Offline -- can't fetch data
+    }
+  });
 };
 
 // ------------------------------------------------------------------------
 // Packup and send data to firestore
+//
+// Will be called @:
+//
+// addTrip          -- HomeScreen
+// editTrip         -- TripScreen
+// removeTrip       -- TripScreen
+// deleteAllTrips   -- HomeScreen
+//
+// addPerson        -- TripScreen
+// editPerson       -- TripScreen
+// removePerson     -- TripScreen
+//
+// addActivity      -- TripScreen
+// editActivity     -- TripScreen
+// removeActivity   -- TripScreen
 // ------------------------------------------------------------------------
 export const packFirestore = async () => {
   const TRIPS_KEY = "@trips_list";
@@ -137,28 +162,32 @@ export const packFirestore = async () => {
     console.log("PACKUP ERR: ", err);
   }
 
-  //   Packup and send to db
-  const sendData = JSON.stringify(sendList);
-  getUserInfo().then((user) => {
-    var userRef = firebase.firestore().collection("users").doc(user.id);
-    try {
-      var getUser = userRef.get().then((doc) => {
-        if (!doc.exists) {
-          console.log(
-            "Incorrect user ID -- doc doesnt't exist to packup and send"
-          );
-        } else {
-          firebase.firestore().collection("users").doc(user.id).set({
-            name: user.name,
-            email: user.email,
-            photoSrc: user.photoSrc,
-            loginType: user.loginType,
-            tripData: sendData,
+  NetInfo.fetch().then((connection) => {
+    if (connection.isConnected) {
+      //   Packup and send to db
+      const sendData = JSON.stringify(sendList);
+      getUserInfo().then((user) => {
+        var userRef = firebase.firestore().collection("users").doc(user.id);
+        try {
+          var getUser = userRef.get().then((doc) => {
+            if (!doc.exists) {
+              console.log(
+                "Incorrect user ID -- doc doesnt't exist to packup and send"
+              );
+            } else {
+              firebase.firestore().collection("users").doc(user.id).set({
+                name: user.name,
+                email: user.email,
+                photoSrc: user.photoSrc,
+                loginType: user.loginType,
+                tripData: sendData,
+              });
+            }
           });
+        } catch (err) {
+          console.log("PACKUP --  send ERR: ", err);
         }
       });
-    } catch (err) {
-      console.log("PACKUP --  send ERR: ", err);
     }
   });
 };

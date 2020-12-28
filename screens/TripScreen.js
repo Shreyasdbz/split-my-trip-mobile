@@ -135,8 +135,8 @@ const TripScreen = ({ navigation }) => {
       setTimeout(() => {
         navigation.navigate("Home");
         removeTrip(trip.id).then((update) => {
-          packFirestore().then((update) => {
-            console.log("Data uploaded to cloud!");
+          packFirestore().then((cloudUpload) => {
+            // console.log("Data uploaded to cloud!");
           });
         });
         set_editTripModal_active((crr) => false);
@@ -146,8 +146,8 @@ const TripScreen = ({ navigation }) => {
       // Save Stuff in
       editTrip(trip.id, input_title, input_date, input_colorID).then(
         (update) => {
-          packFirestore().then((update) => {
-            console.log("Data uploaded to cloud!");
+          packFirestore().then((cloudUpload) => {
+            // console.log("Data uploaded to cloud!");
           });
         }
       );
@@ -198,8 +198,8 @@ const TripScreen = ({ navigation }) => {
       addPerson(trip.id, input_name).then((update) => {
         getPeople(trip.id).then((newPeople) => {
           set_peopleList((crr) => newPeople);
-          packFirestore().then((update) => {
-            console.log("Data uploaded to cloud!");
+          packFirestore().then((cloudUpload) => {
+            // console.log("Data uploaded to cloud!");
           });
         });
       });
@@ -250,8 +250,8 @@ const TripScreen = ({ navigation }) => {
             setTimeout(() => {
               getActivities(trip.id).then((newActivities) => {
                 set_activitiesList(newActivities);
-                packFirestore().then((update) => {
-                  console.log("Data uploaded to cloud!");
+                packFirestore().then((cloudUpload) => {
+                  // console.log("Data uploaded to cloud!");
                 });
               });
             }, 100)
@@ -288,8 +288,8 @@ const TripScreen = ({ navigation }) => {
         (newActivities) => {
           updateActivities_fullList(trip.id, newActivities).then((update) => {
             getActivities(trip.id).then((updatedActivities) => {
-              packFirestore().then((update) => {
-                console.log("Data uploaded to cloud!");
+              packFirestore().then((cloudUpload) => {
+                // console.log("Data uploaded to cloud!");
               });
               set_activitiesList((crr) => updatedActivities);
             });
@@ -349,8 +349,8 @@ const TripScreen = ({ navigation }) => {
       ).then((update) => {
         getActivities(trip.id).then((newActivities) => {
           set_activitiesList((crr) => newActivities);
-          packFirestore().then((update) => {
-            console.log("Data uploaded to cloud!");
+          packFirestore().then((cloudUpload) => {
+            // console.log("Data uploaded to cloud!");
           });
         });
       });
@@ -418,8 +418,8 @@ const TripScreen = ({ navigation }) => {
       removeActivity(trip.id, currentEditActivity.id).then((update) => {
         getActivities(trip.id).then((newActivities) => {
           set_activitiesList((crr) => newActivities);
-          packFirestore().then((update) => {
-            console.log("Data uploaded to cloud!");
+          packFirestore().then((cloudUpload) => {
+            // console.log("Data uploaded to cloud!");
           });
         });
       });
@@ -448,8 +448,8 @@ const TripScreen = ({ navigation }) => {
       ).then((update) => {
         getActivities(trip.id).then((newActivities) => {
           set_activitiesList((crr) => newActivities);
-          packFirestore().then((update) => {
-            console.log("Data uploaded to cloud!");
+          packFirestore().then((cloudUpload) => {
+            // console.log("Data uploaded to cloud!");
           });
         });
       });
