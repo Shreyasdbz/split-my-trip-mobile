@@ -6,58 +6,24 @@ import { Dimensions } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-import * as Google from "expo-google-app-auth";
-import { firebaseConfig } from "../config/Firebase";
-
 import { deleteAllData } from "../store/loginStore";
-import { initializeFirestore, checkUserDB } from "../store/cloudStore";
+import {
+  handleLoginWithGoogle,
+  handleLoginWithOffline,
+} from "../store/cloudStore";
 
 const windowHeight = Dimensions.get("window").height;
 
-const LoginScreen = ({ handleLogIn }) => {
-  initializeFirestore();
-
-  const handleGoogleLogin = async () => {
-    try {
-      const { type, accessToken, user } = await Google.logInAsync(
-        firebaseConfig
-      );
-
-      if (type === "success") {
-        let userInfoResponse = await fetch(
-          "https://www.googleapis.com/userinfo/v2/me",
-          {
-            headers: { Authorization: `Bearer ${accessToken}` },
-          }
-        );
-        const googleUser = {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          photoSrc: user.photoUrl,
-          loginType: "GOOGLE",
-        };
-        // Setup user in firestore db
-        // Setup user for Async:
-        handleLogIn(checkUserDB(googleUser));
-      } else {
-        // handleOfflineLogin();
-        alert("Could not log in with Google");
-      }
-    } catch ({ message }) {
-      alert("Google Login Error: " + message);
+const LoginScreen = ({ loginAction }) => {
+  const handleLoginAction = (action) => {
+    if (action === "GOOGLE") {
+      handleLoginWithGoogle().then(() => {
+        loginAction(action);
+      });
+    } else if (action === "OFFLINE") {
+      handleLoginWithOffline();
+      loginAction(action);
     }
-  };
-
-  const handleOfflineLogin = () => {
-    const offlineUser = {
-      id: 0,
-      name: "",
-      email: "~Offline~",
-      photoSrc: "https://img.icons8.com/ios-glyphs/96/000000/person-male.png",
-      loginType: "OFFLINE",
-    };
-    handleLogIn(offlineUser);
   };
 
   return (
@@ -80,7 +46,7 @@ const LoginScreen = ({ handleLogIn }) => {
         </Heading>
       </HeadingView>
       <ButtonsView>
-        <TouchableOpacity onPress={handleGoogleLogin}>
+        <TouchableOpacity onPress={() => handleLoginAction("GOOGLE")}>
           <Button>
             <LoginTextView>
               <LoginText>Login with Google</LoginText>
@@ -109,7 +75,7 @@ const LoginScreen = ({ handleLogIn }) => {
             </LoginLogoView>
           </Button>
         </TouchableOpacity> */}
-        <TouchableOpacity onPress={handleOfflineLogin}>
+        <TouchableOpacity onPress={() => handleLoginAction("OFFLINE")}>
           <Button>
             <LoginTextView>
               <LoginText>Use Offline</LoginText>

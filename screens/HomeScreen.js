@@ -13,6 +13,7 @@ import Modal_UserSettings from "../components/misc/Modal_UserSettings";
 import TripListing from "../components/trips/TripListing";
 import Modal_NewTrip from "../components/trips/Modal_NewTrip";
 import Modal_DeleteTrips from "../components/trips/Modal_DeleteTrips";
+import Modal_Loading from "../components/misc/Modal_Loading";
 
 import {
   storeUser,
@@ -27,6 +28,7 @@ import { getColorBase, getColorSecondary } from "../store/colorStore";
 const HomeScreen = ({ navigation }) => {
   const [userInfo, set_userInfo] = useState(null);
   const [tripsList, set_tripsList] = useState(null);
+  const [isLoading, set_isLoading] = useState(false);
 
   // Animate State Variables
   const [newTripModal_visible, set_newTripModal_visible] = useState(false);
@@ -34,6 +36,29 @@ const HomeScreen = ({ navigation }) => {
   const modal_userSettings_yPos = useRef(new Animated.Value(-3000)).current;
   const modal_newTrip_yPos = useRef(new Animated.Value(3000)).current;
   const modal_deleteTrips_yPos = useRef(new Animated.Value(3000)).current;
+  const modal_loading_yPos = useRef(new Animated.Value(-3000)).current;
+
+  const loginAction = (loginType) => {
+    // Setup user
+    if (loginType === "GOOGLE") {
+      getUserInfo().then((newInfo) => {
+        set_userInfo((crr) => newInfo);
+        unpackFirestore(newInfo).then(() => {
+          console.log("loginAction -- Unpacked");
+          getTrips().then((newTrips) => {
+            set_tripsList((crr) => newTrips);
+          });
+        });
+      });
+    } else if (loginType === "OFFLINE") {
+      getUserInfo().then((newInfo) => {
+        set_userInfo((crr) => newInfo);
+        getTrips().then((newTrips) => {
+          set_tripsList((crr) => newTrips);
+        });
+      });
+    }
+  };
 
   function animateHomeScreen(action) {
     if (action === "OPEN") {
@@ -48,6 +73,33 @@ const HomeScreen = ({ navigation }) => {
         duration: 200,
         useNativeDriver: false,
       }).start();
+    }
+  }
+
+  function handleLoadingScreen(action) {
+    if (action === "OPEN") {
+      Animated.timing(modal_loading_yPos, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: false,
+      }).start();
+      animateHomeScreen("OPEN");
+    } else if (action === "CLOSE") {
+      Animated.timing(modal_loading_yPos, {
+        toValue: -3000,
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+      animateHomeScreen("CLOSE");
+      set_isLoading((crr) => false);
+    } else if (action === "LOGOUT") {
+      Animated.timing(modal_loading_yPos, {
+        toValue: -3000,
+        duration: 200,
+        useNativeDriver: false,
+      }).start();
+      animateHomeScreen("CLOSE");
+      set_isLoading((crr) => false);
     }
   }
 
@@ -150,9 +202,7 @@ const HomeScreen = ({ navigation }) => {
       // delete all trips
       removeTrips().then((update) => {
         set_tripsList((crr) => null);
-        packFirestore().then((cloudUpload) => {
-          // console.log("Data uploaded to cloud")
-        });
+        packFirestore().then((cloudUpload) => {});
       });
       Animated.timing(modal_deleteTrips_yPos, {
         toValue: 3000,
@@ -161,15 +211,6 @@ const HomeScreen = ({ navigation }) => {
       }).start();
       animateHomeScreen("CLOSE");
     }
-  };
-
-  const handleLogIn = (userInfo) => {
-    storeUser(userInfo).then((update) => {
-      getUserInfo().then((newInfo) => {
-        unpackFirestore(newInfo.id);
-        set_userInfo((crr) => newInfo);
-      });
-    });
   };
 
   var _subscribe = navigation.addListener("didFocus", () => {
@@ -183,17 +224,33 @@ const HomeScreen = ({ navigation }) => {
 
   useEffect(
     () => {
+      handleLoadingScreen("OPEN");
+
       // Setup user
       getUserInfo().then((newInfo) => {
         set_userInfo((crr) => newInfo);
-        unpackFirestore(newInfo.id);
-        // Setup trips
-        getTrips().then((newTrips) => {
-          set_tripsList((crr) => newTrips);
-        });
+        if (newInfo !== null) {
+          if (newInfo.loginType !== "OFFLINE") {
+            unpackFirestore(newInfo).then(() => {
+              console.log("useEffect -- Unpacked");
+              // Setup trips
+              getTrips().then((newTrips) => {
+                set_tripsList((crr) => newTrips);
+                handleLoadingScreen("CLOSE");
+              });
+            });
+          }
+        } else {
+          getTrips().then((newTrips) => {
+            set_tripsList((crr) => newTrips);
+            handleLoadingScreen("CLOSE");
+          });
+        }
       });
     },
     [],
+    [isLoading],
+    [userInfo],
     [tripsList]
   );
 
@@ -202,7 +259,11 @@ const HomeScreen = ({ navigation }) => {
       <StatusBar style="light" />
 
       {userInfo === null ? (
-        <LoginScreen handleLogIn={handleLogIn} />
+        <LoginScreen loginAction={loginAction} />
+      ) : isLoading === true ? (
+        <Animated_Modal_Loading_View style={{ top: modal_loading_yPos }}>
+          <Modal_Loading />
+        </Animated_Modal_Loading_View>
       ) : (
         <Container>
           <Animated_Modal_UserSettings_View
@@ -409,6 +470,8 @@ const EmptyListingText = styled.Text`
   margin: 2px 0px;
 `;
 
+// Modals ------------------------------------------------------
+
 const Modal_UserSettings_View = styled.View`
   width: 100%;
   height: 100%;
@@ -437,6 +500,16 @@ const Modal_DeleteTrips_View = styled.View`
 `;
 const Animated_Modal_DeleteTrips_View = Animated.createAnimatedComponent(
   Modal_DeleteTrips_View
+);
+
+const Modal_Loading_View = styled.View`
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 1;
+`;
+const Animated_Modal_Loading_View = Animated.createAnimatedComponent(
+  Modal_Loading_View
 );
 
 // Icons8 Ref for "+" icon: <a href="https://icons8.com/icon/3220/plus">Plus icon by Icons8</a>
