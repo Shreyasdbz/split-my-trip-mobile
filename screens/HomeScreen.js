@@ -38,6 +38,9 @@ const HomeScreen = ({ navigation }) => {
   const modal_deleteTrips_yPos = useRef(new Animated.Value(3000)).current;
   const modal_loading_yPos = useRef(new Animated.Value(-3000)).current;
 
+  // ----
+  // --- one time setup after login ----
+  // ----
   const loginAction = (loginType) => {
     // Setup user
     if (loginType === "GOOGLE") {
@@ -60,6 +63,9 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
+  // ----
+  // --- animate Home Screen for modals ----
+  // ----
   function animateHomeScreen(action) {
     if (action === "OPEN") {
       Animated.timing(homeScreen_opacity, {
@@ -76,6 +82,9 @@ const HomeScreen = ({ navigation }) => {
     }
   }
 
+  // ----
+  // --- control Loading Screen visibility ----
+  // ----
   function handleLoadingScreen(action) {
     if (action === "OPEN") {
       Animated.timing(modal_loading_yPos, {
@@ -103,6 +112,9 @@ const HomeScreen = ({ navigation }) => {
     }
   }
 
+  // ----
+  // --- handle -- USER SETTINGS MODAL ----
+  // ----
   function handleUserSettingsModal(action) {
     if (action === "OPEN") {
       Animated.timing(modal_userSettings_yPos, {
@@ -138,6 +150,9 @@ const HomeScreen = ({ navigation }) => {
     }
   }
 
+  // ----
+  // --- handle -- NEW TRIP MODAL ----
+  // ----
   const handleNewTripModal = (action, newTripName) => {
     if (action === "OPEN") {
       set_newTripModal_visible((crr) => true);
@@ -181,6 +196,9 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
+  // ----
+  // --- handle -- DELETE TRIP MODAL ----
+  // ----
   const handleDeleteTripsModal = (action) => {
     if (action === "OPEN") {
       if (tripsList !== null) {
@@ -213,6 +231,9 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
+  // ----
+  // --- refresh the screen after navigating to it ----
+  // ----
   var _subscribe = navigation.addListener("didFocus", () => {
     // The screen is focused
     // Call any action
