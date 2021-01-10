@@ -96,7 +96,7 @@ export const checkUserDB = (user) => {
 // ------------------------------------------------------------------------
 // Log in with Google Auth (WebView)
 // ------------------------------------------------------------------------
-export const handleLoginWithGoogle = async () => {
+export const handleLoginWithGoogle = async (loginAction) => {
   initializeFirestore();
   try {
     const { type, accessToken, user } = await Google.logInAsync(firebaseConfig);
@@ -116,7 +116,7 @@ export const handleLoginWithGoogle = async () => {
         loginType: "GOOGLE",
         firebaseID: "",
       };
-      return firebase
+      firebase
         .auth()
         .signInWithEmailAndPassword(user.email, user.id)
         .catch(function (signInError) {
@@ -137,6 +137,7 @@ export const handleLoginWithGoogle = async () => {
                 storeUser(googleUser).then(() => {
                   getUserInfo().then((newInfo) => {
                     unpackFirestore(newInfo);
+                    loginAction("GOOGLE");
                   });
                 });
               });
@@ -150,6 +151,7 @@ export const handleLoginWithGoogle = async () => {
             storeUser(googleUser).then(() => {
               getUserInfo().then((newInfo) => {
                 unpackFirestore(newInfo);
+                loginAction("GOOGLE");
               });
             });
           } catch (userCredSignInError) {

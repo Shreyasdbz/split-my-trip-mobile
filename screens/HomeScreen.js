@@ -252,7 +252,6 @@ const HomeScreen = ({ navigation }) => {
         if (newInfo !== null) {
           if (newInfo.loginType !== "OFFLINE") {
             unpackFirestore(newInfo).then(() => {
-              console.log("useEffect -- Unpacked");
               // Setup trips
               getTrips().then((newTrips) => {
                 set_tripsList((crr) => newTrips);
