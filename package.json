@@ -19,6 +19,7 @@
     "expo-google-sign-in": "~8.3.0",
     "expo-linear-gradient": "~8.3.0",
     "expo-screen-orientation": "~2.0.0",
+    "expo-splash-screen": "~0.6.2",
     "expo-status-bar": "~1.0.2",
     "firebase": "7.9.0",
     "lottie-react-native": "~2.6.1",
