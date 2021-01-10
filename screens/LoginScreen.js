@@ -17,9 +17,13 @@ const windowHeight = Dimensions.get("window").height;
 const LoginScreen = ({ loginAction }) => {
   const handleLoginAction = (action) => {
     if (action === "GOOGLE") {
-      handleLoginWithGoogle().then(() => {
-        loginAction(action);
-      });
+      handleLoginWithGoogle()
+        .then(() => {
+          loginAction(action);
+        })
+        .catch(function (handleGoogleLoginError) {
+          console.log("LoginScreen handle google login error");
+        });
     } else if (action === "OFFLINE") {
       handleLoginWithOffline();
       loginAction(action);

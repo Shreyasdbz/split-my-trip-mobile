@@ -30,43 +30,67 @@ export const initializeFirestore = () => {
 // ------------------------------------------------------------------------
 export const checkUserDB = (user) => {
   initializeFirestore();
-  if (user.loginType !== "OFFLINE") {
-    NetInfo.fetch().then((connection) => {
-      if (connection.isConnected) {
-        // Signed in
-        var userRef = firebase.firestore().collection("users").doc(user.id);
-        try {
-          var getUser = userRef.get().then((doc) => {
-            if (!doc.exists) {
-              // New User --- Add to DB
-              firebase.firestore().collection("users").doc(user.id).set({
-                name: user.name,
-                email: user.email,
-                photoSrc: user.photoSrc,
-                loginType: user.loginType,
-                tripData: [],
+  NetInfo.fetch().then((connection) => {
+    if (connection.isConnected) {
+      // Signed in
+      firebase
+        .auth()
+        .signInWithEmailAndPassword(user.email, user.id)
+        .catch(function (loginError) {
+          alert("Login Error: ", loginError);
+        })
+        .then((userCred) => {
+          var userRef = firebase
+            .firestore()
+            .collection("users")
+            .doc(user.firebaseID);
+          try {
+            var getUser = userRef
+              .get()
+              .then((doc) => {
+                if (!doc.exists) {
+                  // New User --- Add to DB
+                  firebase
+                    .firestore()
+                    .collection("users")
+                    .doc(user.firebaseID)
+                    .set({
+                      name: user.name,
+                      email: user.email,
+                      photoSrc: user.photoSrc,
+                      loginType: user.loginType,
+                      tripData: "[]",
+                    });
+                } else {
+                  // Existing User --- Update DB
+                  firebase
+                    .firestore()
+                    .collection("users")
+                    .doc(user.firebaseID)
+                    .set(
+                      {
+                        name: user.name,
+                        email: user.email,
+                        photoSrc: user.photoSrc,
+                        loginType: user.loginType,
+                      },
+                      { merge: true }
+                    );
+                }
+              })
+              .catch(function (dbError) {
+                console.log("cloudStore Database Error: Code: ", dbError.code);
+                console.log(
+                  "cloudStore Database Error: Message: ",
+                  dbError.message
+                );
               });
-            } else {
-              // Existing User --- Update DB
-              firebase.firestore().collection("users").doc(user.id).set(
-                {
-                  name: user.name,
-                  email: user.email,
-                  photoSrc: user.photoSrc,
-                  loginType: user.loginType,
-                },
-                { merge: true }
-              );
-            }
-          });
-        } catch (err) {
-          alert("LOGIN DATABASE ERROR: ", err);
-        }
-      }
-    });
-  }
-
-  return user;
+          } catch (err) {
+            alert("LOGIN DATABASE ERROR: ", err);
+          }
+        });
+    }
+  });
 };
 
 // ------------------------------------------------------------------------
@@ -90,17 +114,52 @@ export const handleLoginWithGoogle = async () => {
         email: user.email,
         photoSrc: user.photoUrl,
         loginType: "GOOGLE",
+        firebaseID: "",
       };
-      // Setup user in firestore db
-      // Setup user for Async:
-      checkUserDB(googleUser);
-      storeUser(googleUser).then(() => {
-        getUserInfo().then((newInfo) => {
-          unpackFirestore(newInfo);
+      return firebase
+        .auth()
+        .signInWithEmailAndPassword(user.email, user.id)
+        .catch(function (signInError) {
+          //
+          // New User -- create new account
+          if (signInError.code === "auth/user-not-found") {
+            //
+            firebase
+              .auth()
+              .createUserWithEmailAndPassword(user.email, user.id)
+              .catch(function (signUpError) {
+                alert("SignUp Error: ", signUpError);
+              })
+              .then((userCredential_signUp) => {
+                // User is now signed up --
+                googleUser.firebaseID = userCredential_signUp.user.uid;
+                checkUserDB(googleUser);
+                storeUser(googleUser).then(() => {
+                  getUserInfo().then((newInfo) => {
+                    unpackFirestore(newInfo);
+                  });
+                });
+              });
+          }
+        })
+        .then((userCredential_signIn) => {
+          // User is now signed in --
+          try {
+            googleUser.firebaseID = userCredential_signIn.user.uid;
+            checkUserDB(googleUser);
+            storeUser(googleUser).then(() => {
+              getUserInfo().then((newInfo) => {
+                unpackFirestore(newInfo);
+              });
+            });
+          } catch (userCredSignInError) {
+            // ####### TODO: Fix ############
+            // Happnens when user is signing up
+            // ##############################
+            console.log("userCredSignInError: -- ", userCredSignInError);
+          }
         });
-      });
     } else {
-      // handleOfflineLogin();
       alert("Could not log in with Google");
     }
   } catch ({ message }) {
@@ -132,30 +191,48 @@ export const unpackFirestore = async (inputUser) => {
       // Online -- fetch data
       // signed in
       if (inputUser.loginType !== "OFFLINE") {
-        var userRef = firebase
-          .firestore()
-          .collection("users")
-          .doc(inputUser.id);
-        try {
-          var getUser = userRef.get().then((doc) => {
-            var data = JSON.parse(doc.data().tripData);
-            const tripsList = [];
-            for (let i = 0; i < data.length; i++) {
-              tripsList.push(data[i].trip);
-              setPeopleStore(
-                data[i].trip.id,
-                data[i].peopleList
-              ).then(() => {});
-              setActivityStore(
-                data[i].trip.id,
-                data[i].activitiesList
-              ).then(() => {});
+        firebase
+          .auth()
+          .signInWithEmailAndPassword(inputUser.email, inputUser.id)
+          .catch(function (signInError) {
+            console.log("Unpack Firestore sign in error: ", signInError);
+          })
+          .then(() => {
+            //
+            var userRef = firebase
+              .firestore()
+              .collection("users")
+              .doc(inputUser.firebaseID);
+            try {
+              var getUser = userRef
+                .get()
+                .catch(function (getDataError) {
+                  console.log("UNPACK DATABASE GET DATA ERROR: ", getDataError);
+                })
+                .then((doc) => {
+                  try {
+                    var data = JSON.parse(doc.data().tripData);
+                    const tripsList = [];
+                    for (let i = 0; i < data.length; i++) {
+                      tripsList.push(data[i].trip);
+                      setPeopleStore(
+                        data[i].trip.id,
+                        data[i].peopleList
+                      ).then(() => {});
+                      setActivityStore(
+                        data[i].trip.id,
+                        data[i].activitiesList
+                      ).then(() => {});
+                    }
+                    setTripStore(tripsList).then(() => {});
+                  } catch (parseError) {
+                    console.log("unpack parse error: ", parseError);
+                  }
+                });
+            } catch (err) {
+              console.log("UNPACK DATABASE ERROR: ", err);
             }
-            setTripStore(tripsList).then(() => {});
           });
-        } catch (err) {
-          console.log("UNPACK DATABASE ERROR: ", err);
-        }
       }
     } else {
       // Offline -- can't fetch data
@@ -166,7 +243,7 @@ export const unpackFirestore = async (inputUser) => {
 // ------------------------------------------------------------------------
 // Packup and send data to firestore
 //
-// Will be called @:
+// Will be called at:
 //
 // addTrip          -- HomeScreen
 // editTrip         -- TripScreen
@@ -236,7 +313,7 @@ export const packFirestore = async () => {
               //   Packup and send to db
               firebase
                 .auth()
-                .signInAnonymously()
+                .signInWithEmailAndPassword(user.email, user.id)
                 .then(() => {
                   // signed in
                   const sendData = JSON.stringify(sendList);
@@ -244,7 +321,7 @@ export const packFirestore = async () => {
                     var userRef = firebase
                       .firestore()
                       .collection("users")
-                      .doc(user.id);
+                      .doc(user.firebaseID);
                     try {
                       var getUser = userRef.get().then((doc) => {
                         if (!doc.exists) {
@@ -255,7 +332,7 @@ export const packFirestore = async () => {
                           firebase
                             .firestore()
                             .collection("users")
-                            .doc(user.id)
+                            .doc(user.firebaseID)
                             .set({
                               name: user.name,
                               email: user.email,

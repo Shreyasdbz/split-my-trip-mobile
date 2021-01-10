@@ -47,7 +47,6 @@ const HomeScreen = ({ navigation }) => {
       getUserInfo().then((newInfo) => {
         set_userInfo((crr) => newInfo);
         unpackFirestore(newInfo).then(() => {
-          console.log("loginAction -- Unpacked");
           getTrips().then((newTrips) => {
             set_tripsList((crr) => newTrips);
           });
