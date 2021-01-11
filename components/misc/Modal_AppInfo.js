@@ -17,6 +17,16 @@ const Modal_AppInfo = ({ handleAppInfoModal }) => {
           <CaptionText>
             Data stored with this app is not distributed anywhere or to anyone
           </CaptionText>
+          <CaptionText_Info
+            style={{ color: "purple" }}
+            onPress={() =>
+              Linking.openURL(
+                "https://shreyasdbz.github.io/split-my-trip-mobile/"
+              )
+            }
+          >
+            Help & more information
+          </CaptionText_Info>
           <CaptionText>App Licenses:</CaptionText>
           <CaptionText
             style={{ color: "blue" }}
@@ -96,12 +106,29 @@ const TitleText = styled.Text`
 `;
 
 const CaptionView = styled.View``;
+const CaptionViewInfo = styled.View`
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+`;
 
 const CaptionText = styled.Text`
   font-weight: 500;
   font-size: 16px;
   opacity: 0.4;
   padding-bottom: 5px;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+`;
+const CaptionText_Info = styled.Text`
+  font-weight: 800;
+  font-size: 16px;
+  opacity: 0.75;
+  padding-bottom: 5px;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 `;
 
 const ButtonsView = styled.View`
