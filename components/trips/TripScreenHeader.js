@@ -71,7 +71,7 @@ const Header = styled.View`
   justify-content: center;
   align-items: flex-end;
   flex-direction: row;
-  padding: 15px 20px;
+  padding: 25px 20px;
 `;
 
 const BackButtonView = styled.View`

@@ -237,7 +237,7 @@ export const unpackFirestore = async (inputUser) => {
           });
       }
     } else {
-      // Offline -- can't fetch data
+      alert("Offline - Unable to fetch your data");
     }
   });
 };

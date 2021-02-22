@@ -6,7 +6,6 @@ import { Dimensions, Animated } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-import { deleteAllData } from "../store/loginStore";
 import {
   handleLoginWithGoogle,
   handleLoginWithOffline,

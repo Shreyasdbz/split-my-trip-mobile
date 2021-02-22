@@ -101,7 +101,7 @@ const TopRow = styled.View`
 
 const TitleView = styled.View`
   height: 100%;
-  width: 75%;
+  max-width: 70%;
   justify-content: center;
   padding-left: 5px;
 `;

@@ -50,6 +50,11 @@ const HomeScreen = ({ navigation }) => {
           getTrips().then((newTrips) => {
             set_tripsList((crr) => newTrips);
           });
+          setTimeout(() => {
+            getTrips().then((newTrips) => {
+              set_tripsList((crr) => newTrips);
+            });
+          }, 500);
         });
       });
     } else if (loginType === "OFFLINE") {
