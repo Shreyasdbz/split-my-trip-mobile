@@ -9,5 +9,5 @@ export const firebaseConfig = {
   messagingSenderId: "945902506805",
   appId: "1:945902506805:web:70334d5baa16bf4667327c",
   measurementId: "G-3LWTHGB014",
-  iosClientId: `945902506805-mbmmlqhhh84bgfl0vmlan9to390t8d1f.apps.googleusercontent.com`,
+  clientId: `945902506805-nrlatrg80k38iqm8ppt446sf1qgq1ksb.apps.googleusercontent.com`,
 };
